@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MSSQL\create_proc_GetItem.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="MSSQL\create_proc_GetItem.sql" />
+  </ItemGroup>
+
+</Project>
