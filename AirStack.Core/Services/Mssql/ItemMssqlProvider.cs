@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AirStack.Core.Services
+namespace AirStack.Core.Services.Mssql
 {
     public class ItemMssqlProvider : IItemProvider
     {
@@ -53,7 +53,7 @@ namespace AirStack.Core.Services
         {
             using (var con = _sql.Connect())
             {
-                object param = new { Code = item.Code, ParentCode = item.ParentCode };
+                object param = new { item.Code, item.ParentCode };
                 item.ID = con.ExecuteScalar<long>(c_CreateItemQuery, param);
 
                 return item.ID > 0;
@@ -67,7 +67,7 @@ namespace AirStack.Core.Services
         {
             using (var con = _sql.Connect())
             {
-                object param = new { Code = item.Code, ParentCode = item.ParentCode };
+                object param = new { item.Code, item.ParentCode };
                 int res = con.Execute(c_UpdateItemQuery, param);
 
                 return res > 0;

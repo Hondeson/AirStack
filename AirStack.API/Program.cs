@@ -1,5 +1,6 @@
 using AirStack.Core.Connection;
 using AirStack.Core.Services;
+using AirStack.Core.Services.Mssql;
 using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,7 @@ builder.Services.AddSingleton<ISqlAdapter, MssqlConnectionProvider>((ioc) =>
 builder.Services.AddSingleton<IItemProvider, ItemMssqlProvider>();
 builder.Services.AddSingleton<IItemHistoryProvider, ItemHistoryMssqlProvider>();
 builder.Services.AddSingleton<IStatusProvider, StatusMssqlProvider>();
+builder.Services.AddSingleton<ISettingsProvider, SettingsMssqlProvider>();
 
 var app = builder.Build();
 app.UseCors();

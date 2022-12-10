@@ -3,6 +3,7 @@ using AirStack.Core.Model;
 using AirStack.Core.Services;
 using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace AirStack.API.Controllers
 {
@@ -13,22 +14,27 @@ namespace AirStack.API.Controllers
         readonly IItemProvider _itemSvc;
         readonly IItemHistoryProvider _histSvc;
         readonly IStatusProvider _statSvc;
+        readonly ISettingsProvider _settingSvc;
         readonly ILogger _logger;
-        public ItemController(ILogger<ItemController> logger, IItemProvider itemSvc, IItemHistoryProvider histSvc, IStatusProvider statSvc)
+        public ItemController(ILogger<ItemController> logger, IItemProvider itemSvc, IItemHistoryProvider histSvc, IStatusProvider statSvc, ISettingsProvider settingSvc)
         {
             _logger = logger;
             _itemSvc = itemSvc;
             _histSvc = histSvc;
             _statSvc = statSvc;
+            _settingSvc = settingSvc;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //time param: 2022-11-21T23:59:59
-        public ActionResult<List<ItemModel>> Get(DateTime from, DateTime to)
+        public ActionResult<List<GetItemDTO>> Get(DateTime from, DateTime to)
         {
+            //TODO: filtr čeho? jakého statusu?
+
             if (from > to)
                 return BadRequest();
 
@@ -43,20 +49,13 @@ namespace AirStack.API.Controllers
         {
             try
             {
-                var item = _itemSvc.Get(id);
+                ItemModel item = _itemSvc.Get(id);
 
                 if (item == null)
                     return NotFound();
 
-                var itemHist = _histSvc.GetByItemId(item.ID)
-                    .Select(x => new GetItemHistoryModel()
-                    {
-                        ID = x.ID,
-                        Status = new StatusModel(x.ID),
-                        CreatedAt = x.CreatedAt
-                    }).ToList();
-
-                GetItemDTO respItem = new() { Item = item, HistoryList = itemHist };
+                var itemHist = _histSvc.GetByItemId(item.ID);
+                var respItem = new GetItemDTO(item, itemHist);
 
                 return Ok(respItem);
             }
@@ -73,10 +72,11 @@ namespace AirStack.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Post([FromBody] ItemModel item)
         {
-            //TODO: validace kódu na regex
-
             try
             {
+                if (CheckItemCodeBeforeCreate(item.Code) == false)
+                    return ValidationProblem($"Code {item.Code} does not match any defined regex!");
+
                 if (_itemSvc.Get(item.Code) != null)
                     return Conflict(item.Code);
 
@@ -98,6 +98,29 @@ namespace AirStack.API.Controllers
             }
 
             return CreatedAtRoute("Get", new { id = item.ID }, item);
+        }
+
+        bool CheckItemCodeBeforeCreate(string itemCode)
+        {
+            try
+            {
+                List<Regex> reg = new(1);
+
+                //TODO: cache
+                var regexStrings = _settingSvc.GetCodeRegexes();
+                if (regexStrings.Count == 0)
+                    return true;
+
+                foreach (var item in regexStrings)
+                    reg.Add(new Regex(item));
+
+                return reg.Any(x => x.IsMatch(itemCode));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
         }
 
         [HttpPut]
@@ -149,6 +172,28 @@ namespace AirStack.API.Controllers
                 return false;
 
             return true;
+        }
+
+        [HttpGet("CodeRegexes")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<List<string>> GetCodeRegexes()
+        {
+            try
+            {
+                List<string> regexList = _settingSvc.GetCodeRegexes();
+
+                if (regexList.Count == 0)
+                    return NoContent();
+
+                return Ok(regexList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Problem(ex.Message);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AirStack.Core.Services
+namespace AirStack.Core.Services.Mssql
 {
     public class StatusMssqlProvider : IStatusProvider
     {

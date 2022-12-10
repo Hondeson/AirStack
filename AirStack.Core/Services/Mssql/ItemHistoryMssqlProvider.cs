@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AirStack.Core.Services
+namespace AirStack.Core.Services.Mssql
 {
     public class ItemHistoryMssqlProvider : IItemHistoryProvider
     {
@@ -56,7 +56,7 @@ namespace AirStack.Core.Services
 
             using (var con = _sql.Connect())
             {
-                object param = new { ItemID = model.ItemID, StatusID = model.StatusID, CreatedAt = model.CreatedAt };
+                object param = new { model.ItemID, model.StatusID, model.CreatedAt };
                 model.ID = con.ExecuteScalar<long>(c_CreateQuery, param);
 
                 return model.ID > 0;
