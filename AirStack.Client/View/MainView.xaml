@@ -6,14 +6,71 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:AirStack.Client.View"
     xmlns:vm="clr-namespace:AirStack.Client.ViewModel"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:conv="clr-namespace:AirStack.Client.Converters"
     mc:Ignorable="d"
     Title="AirStack"
-    Height="450"
-    Width="800"
-    d:DataContext="{d:DesignInstance Type=vm:MainViewModel}">
+    Height="250"
+    Width="600"
+    d:DataContext="{d:DesignInstance Type=vm:MainVM}">
+
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter
+            x:Key="boolToVis" />
+    </Window.Resources>
 
     <Grid>
+        <!--#region Back button-->
+        <StackPanel
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Visibility="{Binding Navigation.CanGoBack, Converter={StaticResource boolToVis}}"
+            Cursor="Hand"
+            Background="Transparent"
+            Margin="6"
+            ToolTip="Zpět">
+            <materialDesign:PackIcon
+                Kind="ArrowLeft"
+                Height="28"
+                Width="28" />
+
+            <StackPanel.InputBindings>
+                <MouseBinding
+                    MouseAction="LeftClick"
+                    Command="{Binding GoBackCommand}" />
+            </StackPanel.InputBindings>
+        </StackPanel>
+        <!--#endregion-->
+
+        <!--#region Settings-->
+        <StackPanel
+            Visibility="{Binding CanGoToSettings, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVis}}"
+            Panel.ZIndex="99"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="8">
+            <materialDesign:PackIcon
+                Kind="Pin"
+                Height="22"
+                Width="22"
+                Margin="0,0,0,8" />
+
+            <materialDesign:PackIcon
+                Kind="Cog"
+                Height="22"
+                Width="22" />
+
+            <StackPanel.InputBindings>
+                <MouseBinding
+                    MouseAction="LeftClick"
+                    Command="{Binding SettingsCommand}" />
+            </StackPanel.InputBindings>
+        </StackPanel>
+        <!--#endregion-->
+
+        <!--#region Content-->
         <ContentControl
             Content="{Binding Navigation.ActualView}" />
+        <!--#endregion-->
     </Grid>
 </Window>

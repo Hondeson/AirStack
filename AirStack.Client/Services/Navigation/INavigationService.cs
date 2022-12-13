@@ -1,12 +1,18 @@
-﻿using System.Windows.Controls;
+﻿using AirStack.Client.ViewModel.Base;
+using System;
+using System.Windows.Controls;
 
 namespace AirStack.Client.Services.Navigation
 {
     public interface INavigationService
     {
-        UserControl ActualView { get; set; }
-        object ActualVM { get; }
+        event EventHandler<NavigationViewChangedArgs> ViewChanged;
+        bool CanGoBack { get; }
+
+        UserControl ActualView { get; }
+        BaseVM ActualVM { get; }
 
         void PushView(UserControl view);
+        void PopView();
     }
 }

@@ -1,4 +1,5 @@
-﻿using AirStack.Client.View;
+﻿using AirStack.Client.Services.Settings;
+using AirStack.Client.View;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -17,6 +18,8 @@ namespace AirStack.Client
         protected override void OnStartup(StartupEventArgs e)
         {
             Locator.Initialize();
+            Locator.Resolve<ISettingsProvider>().Load();
+
             MainWindow = Locator.Resolve<MainView>();
 
             base.OnStartup(e);

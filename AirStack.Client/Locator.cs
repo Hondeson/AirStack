@@ -1,4 +1,5 @@
 ﻿using AirStack.Client.Services.Navigation;
+using AirStack.Client.Services.Settings;
 using AirStack.Client.View;
 using AirStack.Client.ViewModel;
 using Autofac;
@@ -24,6 +25,10 @@ namespace AirStack.Client
 
             builder.RegisterType<NavigationService>().As<INavigationService>().SingleInstance();
 
+            builder.RegisterType<SettingsView>().AsSelf();
+            builder.RegisterType<SettingsVM>().AsSelf();
+            builder.RegisterType<SettingsService>().As<ISettingsProvider>().SingleInstance();
+
             _ioc = builder.Build();
         }
 
@@ -31,7 +36,7 @@ namespace AirStack.Client
         {
             builder.Register<MainView>((ioc) =>
             {
-                return new MainView()
+                return new MainView(ioc.Resolve<ISettingsProvider>())
                 {
                     DataContext = ioc.Resolve<MainVM>()
                 };
