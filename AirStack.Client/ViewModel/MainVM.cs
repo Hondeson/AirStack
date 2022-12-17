@@ -1,4 +1,6 @@
 ﻿using AirStack.Client.Services.Navigation;
+using AirStack.Client.Services.Notification;
+using AirStack.Client.Services.Settings;
 using AirStack.Client.View;
 using AirStack.Client.ViewModel.Base;
 using AirStack.Core.Base;
@@ -8,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace AirStack.Client.ViewModel
@@ -21,6 +24,8 @@ namespace AirStack.Client.ViewModel
 
             SettingsCommand = new RelayCommand(OnSettingsCommand);
             GoBackCommand = new RelayCommand(OnGoBackCommand);
+
+            this.Title = "AirStack";
         }
 
         void Navigation_ViewChanged(object sender, NavigationViewChangedArgs e)

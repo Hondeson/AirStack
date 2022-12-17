@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace AirStack.Client.ViewModel.Base
 {
@@ -20,11 +21,25 @@ namespace AirStack.Client.ViewModel.Base
             _ValidationHandler.ErrorsChanged += (s, e) => ErrorsChanged?.Invoke(this, e);
         }
 
+        string _Title;
+        public string Title
+        {
+            get => _Title;
+            set => Set(ref _Title, value);
+        }
+
         bool _IsBusy;
         public bool IsBusy
         {
             get => _IsBusy;
             set => Set(ref _IsBusy, value);
+        }
+
+        public virtual void Initialize() { }
+
+        protected void RaiseOnUI(Action action)
+        {
+            Application.Current.Dispatcher.BeginInvoke(action);
         }
 
         #region Validace

@@ -21,9 +21,8 @@ namespace AirStack.Client.View
     /// </summary>
     public partial class ScanCodeView : UserControl
     {
-        public ScanCodeView(ScanCodeVM vm)
+        public ScanCodeView()
         {
-            this.DataContext = vm;
             InitializeComponent();
         }
     }

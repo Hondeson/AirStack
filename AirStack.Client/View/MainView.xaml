@@ -9,7 +9,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:conv="clr-namespace:AirStack.Client.Converters"
     mc:Ignorable="d"
-    Title="AirStack"
+    Title="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
     Height="250"
     Width="600"
     d:DataContext="{d:DesignInstance Type=vm:MainVM}">
@@ -20,15 +20,24 @@
     </Window.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="auto" />
+        </Grid.RowDefinitions>
+
         <!--#region Back button-->
         <StackPanel
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Visibility="{Binding Navigation.CanGoBack, Converter={StaticResource boolToVis}}"
+            Visibility="{Binding Navigation.CanGoBack, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVis}}"
+            IsEnabled="{Binding Navigation.CanGoBack, UpdateSourceTrigger=PropertyChanged}"
             Cursor="Hand"
             Background="Transparent"
             Margin="6"
-            ToolTip="Zpět">
+            ToolTip="Zpět"
+            Panel.ZIndex="99">
             <materialDesign:PackIcon
                 Kind="ArrowLeft"
                 Height="28"
@@ -48,12 +57,9 @@
             Panel.ZIndex="99"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
-            Margin="8">
-            <materialDesign:PackIcon
-                Kind="Pin"
-                Height="22"
-                Width="22"
-                Margin="0,0,0,8" />
+            Margin="8"
+            Background="Transparent"
+            Cursor="Hand">
 
             <materialDesign:PackIcon
                 Kind="Cog"

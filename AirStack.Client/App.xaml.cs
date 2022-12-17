@@ -18,13 +18,21 @@ namespace AirStack.Client
         protected override void OnStartup(StartupEventArgs e)
         {
             Locator.Initialize();
-            Locator.Resolve<ISettingsProvider>().Load();
 
             MainWindow = Locator.Resolve<MainView>();
 
             base.OnStartup(e);
 
             MainWindow.Show();
+
+            MainWindow.Closing += MainWindow_Closing;
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var toDispose = Locator.Resolve<IEnumerable<IDisposable>>();
+            foreach (var item in toDispose)
+                item.Dispose();
         }
     }
 }

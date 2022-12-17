@@ -189,7 +189,7 @@ namespace AirStack.Client.ViewModel
             };
 
             _settingsSvc.Settings = obj;
-            _settingsSvc.Save();
+            _settingsSvc.Save(true);
         }
     }
 }

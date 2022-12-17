@@ -6,13 +6,105 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:AirStack.Client.View"
     xmlns:vm="clr-namespace:AirStack.Client.ViewModel"
+    xmlns:cust="clr-namespace:AirStack.Client.Controls"
+    xmlns:model="clr-namespace:AirStack.Client.Model"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    d:DataContext="{d:DesignInstance Type=vm:ScanCodeVM}">
-    
-    <Grid>
-        <TextBlock
-            Text="Naskenované SN:" />
+    d:DataContext="{d:DesignInstance Type=vm:ScanCodeVM}"
+    xmlns:ioc="clr-namespace:AirStack.Client.ioc"
+    DataContext="{ioc:IocProxy Type=vm:ScanCodeVM}">
+
+    <Grid
+        Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="auto" />
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel
+            Grid.Row="0"
+            HorizontalAlignment="Center">
+
+            <TextBlock
+                FontSize="26"
+                FontWeight="DemiBold"
+                Text="Naskenované SN" />
+        </StackPanel>
+
+        <StackPanel
+            Margin="0,5,0,0"
+            Grid.Row="1">
+
+            <ListView
+                HorizontalAlignment="Center"
+                ItemsSource="{Binding ScannedSNCollection}">
+
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid
+                            ScrollViewer.VerticalScrollBarVisibility="Visible" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate
+                        DataType="{x:Type model:RequestResultObject}">
+                        <Viewbox>
+                            <Border
+                                Padding="3"
+                                ToolTip="{Binding ResultMessage}">
+                                <Border.Style>
+                                    <Style
+                                        TargetType="{x:Type Border}">
+                                        <Setter
+                                            Property="Background"
+                                            Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding Result}"
+                                                Value="true">
+                                                <Setter
+                                                    Property="ToolTipService.IsEnabled"
+                                                    Value="false" />
+                                            </DataTrigger>
+
+                                            <DataTrigger
+                                                Binding="{Binding Result}"
+                                                Value="false">
+                                                <Setter
+                                                    Property="ToolTipService.IsEnabled"
+                                                    Value="True" />
+                                                <Setter
+                                                    Property="Background">
+                                                    <Setter.Value>
+                                                        <SolidColorBrush
+                                                            Color="#f03232"
+                                                            Opacity="0.6" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <TextBlock
+                                    Text="{Binding Code}" />
+                            </Border>
+                        </Viewbox>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
+        <cust:LoadingResultIndicatorControl
+            Width="80"
+            Grid.Row="2"
+            Result="{Binding RequestResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            IsBusy="{Binding IsBusy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
     </Grid>
 </UserControl>

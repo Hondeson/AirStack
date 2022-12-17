@@ -132,6 +132,7 @@ namespace AirStack.API.Controllers
             bool result = false;
             ItemModel item = itemToUpdate.Item;
             ItemHistoryModel itemHistory = itemToUpdate.History;
+            itemHistory.CreatedAt = DateTime.Now;
 
             try
             {

@@ -9,6 +9,6 @@ namespace AirStack.Client.Services.Settings
         SettingsModel Settings { get; set; }
 
         void Load();
-        void Save();
+        void Save(bool notifyChange = false);
     }
 }

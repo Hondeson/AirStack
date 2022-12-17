@@ -49,6 +49,7 @@ namespace AirStack.Client.Services.Navigation
                 _userControls.Push(ActualView);
 
             this.ActualView = view;
+            this.ActualVM.Initialize();
         }
 
         readonly HistoryStack<UserControl> _userControls = new(10);

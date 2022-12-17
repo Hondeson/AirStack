@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AirStack.Core.Model;
+using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace AirStack.Client.Model
     {
         public string ServerAdress { get; set; } = "127.0.0.1:8080/AirStack";
         public bool AppOnTop { get; set; } = false;
+        public StatusEnum AppMode { get; set; } = StatusEnum.Production;
 
         public string DataSeparator { get; set; } = string.Empty;
         public COMSettings SerialPortSettings { get; set; } = new();
@@ -36,5 +38,4 @@ namespace AirStack.Client.Model
 
         public bool ShouldRestore { get; set; }
     }
-
 }

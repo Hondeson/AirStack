@@ -1,4 +1,5 @@
-﻿using AirStack.Client.Services.Settings;
+﻿using AirStack.Client.Services.Notification;
+using AirStack.Client.Services.Settings;
 using AirStack.Client.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,6 @@ namespace AirStack.Client.View
 
             this.MouseLeftButtonDown += Window_MouseLeftButtonDown;
             this.Closing += Window_Closing;
-            //this.Loaded += MainView_Loaded;
 
             InitializeComponent();
 
@@ -81,7 +81,7 @@ namespace AirStack.Client.View
             w.Maximalized = this.WindowState == WindowState.Maximized;
             w.ShouldRestore = true;
 
-            _settSvc.Save();
+            _settSvc.Save(false);
         }
     }
 }
