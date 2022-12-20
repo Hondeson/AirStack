@@ -1,11 +1,11 @@
 ﻿using AirStack.Client.Model;
 using AirStack.Client.Services.Notification;
 using AirStack.Client.ViewModel;
-using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.IO;
 using System.IO.Ports;
+using System.Text.Json;
 
 namespace AirStack.Client.Services.Settings
 {
@@ -34,7 +34,7 @@ namespace AirStack.Client.Services.Settings
 
             try
             {
-                var settings = JsonConvert.DeserializeObject<SettingsModel>(File.ReadAllText(SettingsFilePath));
+                var settings = JsonSerializer.Deserialize<SettingsModel>(File.ReadAllText(SettingsFilePath));
                 Settings = settings;
             }
             catch (Exception e)
@@ -48,7 +48,7 @@ namespace AirStack.Client.Services.Settings
         {
             try
             {
-                var json = JsonConvert.SerializeObject(Settings);
+                var json = JsonSerializer.Serialize(Settings);
                 File.WriteAllText(SettingsFilePath, json);
 
                 if (notifyChange)

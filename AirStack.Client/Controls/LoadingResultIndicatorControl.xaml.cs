@@ -1,6 +1,8 @@
-﻿using System;
+﻿using AirStack.Client.ViewModel.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,31 +28,32 @@ namespace AirStack.Client.Controls
         public LoadingResultIndicatorControl()
         {
             InitializeComponent();
+            this.Loaded += LoadingResultIndicatorControl_Loaded;
+            this.Unloaded += LoadingResultIndicatorControl_Unloaded;
         }
 
-
-
-        public bool IsBusy
+        private void LoadingResultIndicatorControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            get { return (bool)GetValue(IsBusyProperty); }
-            set { SetValue(IsBusyProperty, value); }
+            var vm = (BaseVM)this.DataContext;
+            vm.IsBusyChanged -= Vm_IsBusyChanged;
         }
 
-        // Using a DependencyProperty as the backing store for IsBusy.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsBusyProperty =
-            DependencyProperty.Register("IsBusy", typeof(bool), typeof(LoadingResultIndicatorControl), new PropertyMetadata(false, IsBusyChanged));
-
-        private static void IsBusyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private void LoadingResultIndicatorControl_Loaded(object sender, RoutedEventArgs e)
         {
-            var sender = d as LoadingResultIndicatorControl;
-            sender?.OnIsBusyChanged();
+            var vm = (BaseVM)this.DataContext;
+            vm.IsBusyChanged += Vm_IsBusyChanged;
+        }
+
+        private void Vm_IsBusyChanged(object sender, BusyChangedArgs e)
+        {
+            OnIsBusyChanged(e.IsBusy, e.Result);
         }
 
         Timer timer;
         volatile bool _display = false;
-        public void OnIsBusyChanged()
+        public void OnIsBusyChanged(bool isBusy, bool? result)
         {
-            if (this.IsBusy == true)
+            if (isBusy == true)
             {
                 if (timer is not null)
                     return;
@@ -62,8 +65,6 @@ namespace AirStack.Client.Controls
                     {
                         if (!_display)
                             return;
-
-                        this.Result = null;
 
                         grid.Background = Brushes.Transparent;
                         progressBar.Visibility = Visibility.Visible;
@@ -80,7 +81,8 @@ namespace AirStack.Client.Controls
                     timer?.Dispose();
                     timer = null;
 
-                    SetGridAnimation();
+                    SetGridAnimation(result);
+                    SetResultText(result);
 
                     progressBar.Visibility = Visibility.Collapsed;
                     progressBar.IsIndeterminate = false;
@@ -88,21 +90,31 @@ namespace AirStack.Client.Controls
             }
         }
 
-        const string c_RedHex = "#f03232";
-        SolidColorBrush GetBrushByResult()
+        private void SetResultText(bool? result)
         {
-            if (this.Result == true)
+            if (result == true)
+                this.resultText.Text = "OK";
+            else if (result == false)
+                this.resultText.Text = "NOK";
+            else
+                this.resultText.Text = "";
+        }
+
+        const string c_RedHex = "#f03232";
+        SolidColorBrush GetBrushByResult(bool? result)
+        {
+            if (result == true)
                 return new SolidColorBrush(Colors.LightGreen);
 
-            else if (this.Result == false)
+            else if (result == false)
                 return (SolidColorBrush)new BrushConverter().ConvertFrom(c_RedHex);
 
             return new SolidColorBrush() { Color = Colors.Transparent };
         }
 
-        void SetGridAnimation()
+        void SetGridAnimation(bool? result)
         {
-            SolidColorBrush brush = GetBrushByResult();
+            SolidColorBrush brush = GetBrushByResult(result);
             brush.Opacity = 0.6;
 
             ColorAnimation animation = new ColorAnimation();
@@ -113,15 +125,5 @@ namespace AirStack.Client.Controls
             grid.Background = brush;
             brush.BeginAnimation(SolidColorBrush.ColorProperty, animation);
         }
-
-        public bool? Result
-        {
-            get { return (bool?)GetValue(ResultProperty); }
-            set { SetValue(ResultProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Result.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ResultProperty =
-            DependencyProperty.Register("Result", typeof(bool?), typeof(LoadingResultIndicatorControl), new PropertyMetadata(null));
     }
 }

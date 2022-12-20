@@ -2,8 +2,7 @@
 using AirStack.Client.Services.Notification;
 using AirStack.Client.Services.Settings;
 using AirStack.Core.Model;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using AirStack.Core.Model.API;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace AirStack.Client.Services.RequestToServer.Http
@@ -100,8 +101,15 @@ namespace AirStack.Client.Services.RequestToServer.Http
             var msg = req.Content.ReadAsStringAsync().Result;
             _log.Error(msg);
 
-            dynamic jObj = JObject.Parse(msg);
-            resultObj.ResultMessage = jObj["detail"];
+            try
+            {
+                var jObj = JsonNode.Parse(msg).AsObject().ToDictionary(x => x.Key, x => x.Value.ToString());
+                resultObj.ResultMessage = jObj["detail"];
+            }
+            catch
+            {
+                resultObj.ResultMessage = msg;
+            }
 
             return resultObj;
         }

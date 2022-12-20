@@ -1,28 +1,36 @@
-﻿using AirStack.API.DTO;
-using AirStack.Core.Model;
+﻿using AirStack.Core.Model;
+using AirStack.Core.Model.API;
 using AirStack.Core.Services;
+using AirStack.Core.Services.Validation;
 using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace AirStack.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ItemController : ControllerBase
+    public partial class ItemController : ControllerBase
     {
-        readonly IItemProvider _itemSvc;
-        readonly IItemHistoryProvider _histSvc;
-        readonly IStatusProvider _statSvc;
-        readonly ISettingsProvider _settingSvc;
-        readonly ILogger _logger;
-        public ItemController(ILogger<ItemController> logger, IItemProvider itemSvc, IItemHistoryProvider histSvc, IStatusProvider statSvc, ISettingsProvider settingSvc)
+        private readonly IItemProvider _itemSvc;
+        private readonly IItemHistoryProvider _histSvc;
+        private readonly IItemValidationService _itemValidationSvc;
+        private readonly IItemDTOProvider _itemDTOSvc;
+        private readonly ILogger _logger;
+        public ItemController(
+            ILogger<ItemController> logger,
+            IItemProvider itemSvc,
+            IItemHistoryProvider histSvc,
+            IItemValidationService itemValidationSvc,
+            IItemDTOProvider itemDTOSvc)
         {
             _logger = logger;
             _itemSvc = itemSvc;
             _histSvc = histSvc;
-            _statSvc = statSvc;
-            _settingSvc = settingSvc;
+            _itemValidationSvc = itemValidationSvc;
+            _itemDTOSvc = itemDTOSvc;
         }
 
         [HttpGet]
@@ -31,14 +39,18 @@ namespace AirStack.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //time param: 2022-11-21T23:59:59
-        public ActionResult<List<GetItemDTO>> Get(DateTime from, DateTime to)
+        public ActionResult<GetItemDTOList> Get(long offset, long fetch)
         {
-            //TODO: filtr čeho? jakého statusu?
-
-            if (from > to)
-                return BadRequest();
-
-            return NoContent();
+            try
+            {
+                var listObj = _itemDTOSvc.Get(offset, fetch);
+                return Ok(listObj);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Problem("Chyba při dotazu na databázi!");
+            }
         }
 
         [HttpGet("{id}", Name = "Get")]
@@ -61,6 +73,7 @@ namespace AirStack.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError("Request params: {0}", id);
                 _logger.LogError(ex.Message);
                 return Problem();
             }
@@ -74,11 +87,11 @@ namespace AirStack.API.Controllers
         {
             try
             {
-                if (CheckItemCodeBeforeCreate(item.Code) == false)
-                    return ValidationProblem($"Code {item.Code} does not match any defined regex!");
+                if (_itemValidationSvc.IsItemCodeValid(item.Code) == false)
+                    return ValidationProblem($"Kód neodpovídá definovanému regexu!");
 
                 if (_itemSvc.Get(item.Code) != null)
-                    return Conflict(item.Code);
+                    return Conflict($"Kód již existuje!");
 
                 bool result = _itemSvc.Create(item);
 
@@ -93,34 +106,13 @@ namespace AirStack.API.Controllers
             }
             catch (Exception ex)
             {
+                var json = JsonSerializer.Serialize(item);
+                _logger.LogError("Request params: {0}", json);
                 _logger.LogError(ex.Message);
-                return Problem();
+                return Problem("Chyba na serveru!");
             }
 
             return CreatedAtRoute("Get", new { id = item.ID }, item);
-        }
-
-        bool CheckItemCodeBeforeCreate(string itemCode)
-        {
-            try
-            {
-                List<Regex> reg = new(1);
-
-                //TODO: cache
-                var regexStrings = _settingSvc.GetCodeRegexes();
-                if (regexStrings.Count == 0)
-                    return true;
-
-                foreach (var item in regexStrings)
-                    reg.Add(new Regex(item));
-
-                return reg.Any(x => x.IsMatch(itemCode));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return false;
-            }
         }
 
         [HttpPut]
@@ -142,7 +134,7 @@ namespace AirStack.API.Controllers
                 result = _itemSvc.Update(item);
 
                 if (result == false)
-                    return Problem("Item could not be updated!");
+                    return Problem("Chyba na serveru! Update položky se nezdařil!");
 
                 if (CanCreateHistoryRecordForItem(item, itemHistory) == false)
                     return Ok();
@@ -150,15 +142,17 @@ namespace AirStack.API.Controllers
                 result = _histSvc.Create(itemHistory);
 
                 if (result == false)
-                    return Problem("History record could not be created!");
+                    return Problem("Chyba na serveru! Vytvoření záznamu se nezdařilo!");
             }
             catch (Exception ex)
             {
+                var json = JsonSerializer.Serialize(itemToUpdate);
+                _logger.LogError("Request params: {0}", json);
                 _logger.LogError(ex.Message);
             }
 
             if (result == false)
-                return Problem();
+                return Problem("Chyba na serveru!");
 
             return Ok();
         }
@@ -183,7 +177,7 @@ namespace AirStack.API.Controllers
         {
             try
             {
-                List<string> regexList = _settingSvc.GetCodeRegexes();
+                List<string> regexList = _itemValidationSvc.GetRegexes().Select(x => x.ToString()).ToList();
 
                 if (regexList.Count == 0)
                     return NoContent();

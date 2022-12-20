@@ -13,6 +13,18 @@ using System.Windows;
 
 namespace AirStack.Client.ViewModel.Base
 {
+    public class BusyChangedArgs : EventArgs
+    {
+        public BusyChangedArgs(bool isBusy, bool? result)
+        {
+            IsBusy = isBusy;
+            Result = result;
+        }
+
+        public bool IsBusy { get; }
+        public bool? Result { get; }
+    }
+
     public class BaseVM : ObservableObject, INotifyDataErrorInfo
     {
         public BaseVM()
@@ -32,7 +44,14 @@ namespace AirStack.Client.ViewModel.Base
         public bool IsBusy
         {
             get => _IsBusy;
-            set => Set(ref _IsBusy, value);
+            private set => Set(ref _IsBusy, value);
+        }
+
+        public event EventHandler<BusyChangedArgs> IsBusyChanged;
+        protected void SetIsBusy(bool isBusy, bool? result = null)
+        {
+            IsBusy = isBusy;
+            IsBusyChanged?.Invoke(this, new BusyChangedArgs(isBusy, result));
         }
 
         public virtual void Initialize() { }

@@ -13,6 +13,7 @@
     d:DesignWidth="800"
     d:DataContext="{d:DesignInstance Type=vm:ScanCodeVM}"
     xmlns:ioc="clr-namespace:AirStack.Client.ioc"
+    x:Name="root"
     DataContext="{ioc:IocProxy Type=vm:ScanCodeVM}">
 
     <Grid
@@ -102,9 +103,8 @@
         </StackPanel>
 
         <cust:LoadingResultIndicatorControl
+            DataContext="{Binding ElementName=root, Path=DataContext}"
             Width="80"
-            Grid.Row="2"
-            Result="{Binding RequestResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            IsBusy="{Binding IsBusy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            Grid.Row="2" />
     </Grid>
 </UserControl>

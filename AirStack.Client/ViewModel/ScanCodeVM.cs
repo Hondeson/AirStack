@@ -37,6 +37,9 @@ namespace AirStack.Client.ViewModel
 
         void userInput_UserInputDataReceived(object sender, UserInputDataReceivedArgs e)
         {
+            if (string.IsNullOrWhiteSpace(e.Data))
+                return;
+
             var dataList = new List<RequestResultObject>();
 
             if (!string.IsNullOrEmpty(_settings.Settings.DataSeparator))
@@ -50,7 +53,6 @@ namespace AirStack.Client.ViewModel
 
             RaiseOnUI(() =>
             {
-                ScannedSNCollection = new(dataList);
                 MakeServerRequest(dataList);
             });
         }
@@ -59,14 +61,19 @@ namespace AirStack.Client.ViewModel
         volatile bool _accesed = false;
         void MakeServerRequest(List<RequestResultObject> codes)
         {
+            if (codes.Count == 0)
+                return;
+
             //pro zobrazení animace musí vykonat UI vlákno
-            this.IsBusy = true;
+            SetIsBusy(true);
             _accesed = true;
 
             Task.Run(() =>
             {
                 lock (_reqLock)
                 {
+                    ScannedSNCollection = new(codes);
+
                     _accesed = false;
                     foreach (var item in codes)
                     {
@@ -74,9 +81,8 @@ namespace AirStack.Client.ViewModel
                         item.Copy(result);
                     }
 
-                    this.RequestResult = codes.All(y => y.Result == true);
                     if (!_accesed)
-                        this.IsBusy = false;
+                        SetIsBusy(false, result: codes.All(y => y.Result == true));
                 }
             });
         }

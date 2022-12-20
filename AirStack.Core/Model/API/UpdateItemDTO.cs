@@ -1,6 +1,4 @@
-﻿using AirStack.Core.Model;
-
-namespace AirStack.Core.Model
+﻿namespace AirStack.Core.Model.API
 {
     public class UpdateItemDTO
     {
@@ -8,8 +6,8 @@ namespace AirStack.Core.Model
 
         public UpdateItemDTO(ItemModel item, StatusEnum state)
         {
-            this.Item = item;
-            this.History = new ItemHistoryModel() { ItemID = this.Item.ID, StatusID = (long)state, CreatedAt = DateTime.Now };
+            Item = item;
+            History = new ItemHistoryModel() { ItemID = Item.ID, StatusID = (long)state, CreatedAt = DateTime.Now };
         }
 
         public ItemModel Item { get; set; }

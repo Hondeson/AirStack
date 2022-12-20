@@ -1,6 +1,7 @@
 using AirStack.Core.Connection;
 using AirStack.Core.Services;
 using AirStack.Core.Services.Mssql;
+using AirStack.Core.Services.Validation;
 using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,8 @@ builder.Services.AddSingleton<IItemProvider, ItemMssqlProvider>();
 builder.Services.AddSingleton<IItemHistoryProvider, ItemHistoryMssqlProvider>();
 builder.Services.AddSingleton<IStatusProvider, StatusMssqlProvider>();
 builder.Services.AddSingleton<ISettingsProvider, SettingsMssqlProvider>();
+builder.Services.AddSingleton<IItemValidationService, ItemValidationService>();
+builder.Services.AddSingleton<IItemDTOProvider, ItemDTOMssqlProvider>();
 
 var app = builder.Build();
 app.UseCors();

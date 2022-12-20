@@ -23,9 +23,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Margin="10"
-                IsIndeterminate="{Binding ElementName=root, Path=IsBusy}"
                 d:IsIndeterminate="True"
-                Visibility="{Binding ElementName=root, Path=IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Style="{StaticResource MaterialDesignCircularProgressBar}" />
 
             <TextBlock
@@ -38,20 +36,6 @@
                     <Style
                         TargetType="{x:Type TextBlock}">
                         <Style.Triggers>
-                            <DataTrigger
-                                Binding="{Binding ElementName=root, Path=Result}"
-                                Value="true">
-                                <Setter
-                                    Property="Text"
-                                    Value="OK" />
-                            </DataTrigger>
-                            <DataTrigger
-                                Binding="{Binding ElementName=root, Path=Result}"
-                                Value="false">
-                                <Setter
-                                    Property="Text"
-                                    Value="NOK" />
-                            </DataTrigger>
 
                             <DataTrigger
                                 Binding="{Binding ElementName=progressBar, Path=Visibility}"

@@ -1,4 +1,5 @@
-﻿using AirStack.Core.Connection;
+﻿
+using AirStack.Core.Connection;
 using AirStack.Core.Model;
 using Dapper;
 using System;
