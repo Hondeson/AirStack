@@ -31,5 +31,5 @@ Nastavují se v databázi v tabulce dbo.Settings, jakýkoliv záznam s **Name** 
 <br><br>![Settings_Regex](https://user-images.githubusercontent.com/59573257/208864854-40206980-cf48-49a0-8d5c-ca811badbfa0.png)
 
 Není-li uveden žádný regex, validace se neprovádí.<br>
-Po editaci hodnot regexů je potřeba provést znovunačtení na API běžící na serveru, toho se docílí buď restartem API nebo dotazem na /reload endpoint:
-<br>![ReloadEndpoint](https://user-images.githubusercontent.com/59573257/208865786-14fbc2dc-cd81-4b9b-b453-e9caae1794ad.png)
+Po editaci hodnot regexů je potřeba provést znovunačtení na API běžící na serveru, toho se docílí buď restartem API nebo dotazem na <br>"adresa api"/reload:
+<br><br>![ReloadEndpoint](https://user-images.githubusercontent.com/59573257/208865786-14fbc2dc-cd81-4b9b-b453-e9caae1794ad.png)
