@@ -2,8 +2,11 @@
 
 ## Klient
 Aplikace slouží jako uživatelský vstup do systému AirStack. Data příchozí na seriový port jsou odesílána na API a výsledek požadavku je následně zobrazen.
+<br>//TODO: obrázky jak vypadá result requestů + error hlášky
 
 ### Režimy aplikace
+Stavy Testy a Expedice se v systému přiřazují na základě triggeru v databázi, aplikace má tuhle funkčnost jen pro krajní případy, kdy trigger nelze využít
+
 #### Vstup do produkce
 Uživatel skenuje SN airbagu
 #### Testy
