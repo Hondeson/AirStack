@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirStack.Core", "AirStack.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scripts", "Scripts\Scripts.csproj", "{030F4652-B5D6-4A82-BCB1-FF63E6FE4E4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirStack.Client", "AirStack.Client\AirStack.Client.csproj", "{4E73FE0A-8D51-45BB-A35D-9D5F605660A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirStack.Client", "AirStack.Client\AirStack.Client.csproj", "{4E73FE0A-8D51-45BB-A35D-9D5F605660A9}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "AirStack.Web", "AirStack.Web\AirStack.Web.esproj", "{6AEC4762-71C4-4EEF-89CB-756A9F857CE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,12 @@ Global
 		{4E73FE0A-8D51-45BB-A35D-9D5F605660A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E73FE0A-8D51-45BB-A35D-9D5F605660A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E73FE0A-8D51-45BB-A35D-9D5F605660A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AEC4762-71C4-4EEF-89CB-756A9F857CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AEC4762-71C4-4EEF-89CB-756A9F857CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AEC4762-71C4-4EEF-89CB-756A9F857CE7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{6AEC4762-71C4-4EEF-89CB-756A9F857CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AEC4762-71C4-4EEF-89CB-756A9F857CE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AEC4762-71C4-4EEF-89CB-756A9F857CE7}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
