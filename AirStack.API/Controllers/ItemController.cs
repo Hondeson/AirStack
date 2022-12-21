@@ -90,7 +90,7 @@ namespace AirStack.API.Controllers
                 if (_itemValidationSvc.IsItemCodeValid(item.Code) == false)
                     return ValidationProblem($"Kód neodpovídá definovanému regexu!");
 
-                if (_itemSvc.Get(item.Code) != null)
+                if (_itemSvc.GetByCode(item.Code) != null)
                     return Conflict($"Kód již existuje!");
 
                 bool result = _itemSvc.Create(item);
@@ -122,27 +122,37 @@ namespace AirStack.API.Controllers
         public IActionResult Put([FromBody] UpdateItemDTO itemToUpdate)
         {
             bool result = false;
-            ItemModel item = itemToUpdate.Item;
+
+            StatusEnum reqStatus = (StatusEnum)itemToUpdate.History.StatusID;
+            ItemModel item = GetItemInFormatByStatus(itemToUpdate.Item, reqStatus);
             ItemHistoryModel itemHistory = itemToUpdate.History;
             itemHistory.CreatedAt = DateTime.Now;
 
             try
             {
-                if (_itemSvc.Get(item.ID) == null)
-                    return NotFound(item.Code);
+                if (ShouldCheckParentCode(reqStatus) == true)
+                {
+                    item = _itemSvc.GetByParentCode(item.ParentCode);
+                    if (item == null)
+                        return NotFound("Kód dílu nenalezen v systému!");
+                }
+                else
+                {
+                    item = _itemSvc.GetByCode(item.Code);
+                    if (item == null)
+                        return NotFound("Kód airbagu nenalezen v systému!");
+                }
 
                 result = _itemSvc.Update(item);
+                itemHistory.ItemID = item.ID;
 
                 if (result == false)
-                    return Problem("Chyba na serveru! Update položky se nezdařil!");
-
-                if (CanCreateHistoryRecordForItem(item, itemHistory) == false)
-                    return Ok();
+                    return Problem("Změna stavu položky se nezdařila!");
 
                 result = _histSvc.Create(itemHistory);
 
                 if (result == false)
-                    return Problem("Chyba na serveru! Vytvoření záznamu se nezdařilo!");
+                    return Problem("Vytvoření záznamu se nezdařilo!");
             }
             catch (Exception ex)
             {
@@ -157,16 +167,43 @@ namespace AirStack.API.Controllers
             return Ok();
         }
 
-        bool CanCreateHistoryRecordForItem(ItemModel item, ItemHistoryModel itemHistory)
+        private bool ShouldCheckParentCode(StatusEnum status)
         {
-            if (itemHistory is null)
-                return false;
+            switch (status)
+            {
+                case StatusEnum.Production:
+                case StatusEnum.ComplaintToSupplier:
+                    return false;
 
-            var itemsHist = _histSvc.GetByItemId(item.ID);
-            if (itemsHist.Count == 0 || itemsHist.Any(x => x.StatusID == itemHistory.StatusID))
-                return false;
+                case StatusEnum.Tests:
+                case StatusEnum.Dispatched:
+                case StatusEnum.Complaint:
+                    return true;
+            }
 
-            return true;
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Během stavů Tests, Dispatched, Complaint se skenuje ParentCode, ovšem klient tohle neřeší a posílá skenovanou hodnotu jako Code,
+        /// je tedy třeba zde hodnoty uvést na pravou míru
+        /// </summary>
+        private ItemModel GetItemInFormatByStatus(ItemModel item, StatusEnum status)
+        {
+            switch (status)
+            {
+                case StatusEnum.Tests:
+                case StatusEnum.Dispatched:
+                case StatusEnum.Complaint:
+                    if (!string.IsNullOrWhiteSpace(item.ParentCode))
+                        break;
+
+                    item.ParentCode = item.Code;
+                    item.Code = string.Empty;
+                    break;
+            }
+
+            return item;
         }
 
         [HttpGet("CodeRegexes")]

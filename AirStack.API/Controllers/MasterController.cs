@@ -69,7 +69,7 @@ namespace AirStack.API.Controllers
                 return Problem("Chyba při načítání regexů!");
             }
 
-            return Ok();
+            return Ok("Reload proběhl úspěšně");
         }
     }
 }

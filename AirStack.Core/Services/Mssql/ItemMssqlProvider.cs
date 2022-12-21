@@ -23,9 +23,14 @@ namespace AirStack.Core.Services.Mssql
             return Get(id, null)?.FirstOrDefault();
         }
 
-        public ItemModel Get(string code)
+        public ItemModel GetByCode(string code)
         {
             return Get(-1, code: code)?.FirstOrDefault();
+        }
+
+        public ItemModel GetByParentCode(string parentCode)
+        {
+            return Get(-1, parentCode: parentCode)?.FirstOrDefault();
         }
 
         public List<ItemModel> Filter(string codeFilterString)
@@ -63,12 +68,13 @@ namespace AirStack.Core.Services.Mssql
 
         const string c_UpdateItemQuery =
             @"update [dbo].[Item]
-                set [Code] = @Code, [ParentCode] = @ParentCode";
+                set [Code] = @Code, [ParentCode] = @ParentCode
+                where [ID] = @ID";
         public bool Update(ItemModel item)
         {
             using (var con = _sql.Connect())
             {
-                object param = new { item.Code, item.ParentCode };
+                object param = new { ID = item.ID, Code = item.Code, ParentCode = item.ParentCode };
                 int res = con.Execute(c_UpdateItemQuery, param);
 
                 return res > 0;

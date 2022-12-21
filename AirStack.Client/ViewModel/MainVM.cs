@@ -17,15 +17,39 @@ namespace AirStack.Client.ViewModel
 {
     public class MainVM : BaseVM
     {
-        public MainVM(INavigationService nav)
+        readonly ISettingsProvider _settings;
+        public MainVM(INavigationService nav, ISettingsProvider settings)
         {
+            _settings = settings;
             Navigation = nav;
             Navigation.ViewChanged += Navigation_ViewChanged;
 
             SettingsCommand = new RelayCommand(OnSettingsCommand);
             GoBackCommand = new RelayCommand(OnGoBackCommand);
 
-            this.Title = "AirStack";
+            SetTitleByActualMode();
+        }
+
+        void SetTitleByActualMode()
+        {
+            switch (_settings.Settings.AppMode)
+            {
+                case Core.Model.StatusEnum.Production:
+                    Title = "Airstack Produkce";
+                    break;
+                case Core.Model.StatusEnum.Tests:
+                    Title = "Airstack Testy";
+                    break;
+                case Core.Model.StatusEnum.Dispatched:
+                    Title = "Airstack Expedice";
+                    break;
+                case Core.Model.StatusEnum.Complaint:
+                    Title = "Airstack Reklamace";
+                    break;
+                case Core.Model.StatusEnum.ComplaintToSupplier:
+                    Title = "Airstack Reklamace dodavateli";
+                    break;
+            }
         }
 
         void Navigation_ViewChanged(object sender, NavigationViewChangedArgs e)

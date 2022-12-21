@@ -7,7 +7,8 @@ namespace AirStack.Core.Services
         bool Create(ItemModel item);
         List<ItemModel> Filter(string codeFilterString);
         ItemModel Get(long id);
-        ItemModel Get(string code);
+        ItemModel GetByCode(string code);
+        ItemModel GetByParentCode(string parentCode);
         bool Update(ItemModel item);
     }
 }
