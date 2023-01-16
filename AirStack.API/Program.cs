@@ -1,8 +1,13 @@
+using AirStack.API.Helper;
 using AirStack.Core.Connection;
-using AirStack.Core.Services;
-using AirStack.Core.Services.Mssql;
-using AirStack.Core.Services.Validation;
+using AirStack.Core.Model;
+using AirStack.Core.Service;
+using AirStack.Core.Service.Mssql;
+using AirStack.Core.Service.Validation;
 using System.Data;
+
+if (FilterEnumHelper.ValidateEnumAgainstMain(typeof(StatusEnum), typeof(StatusFilterEnum)) == false)
+    throw new Exception($"Enum {nameof(FilterEnumHelper)} neodpovídá {nameof(StatusEnum)}");
 
 var builder = WebApplication.CreateBuilder(args);
 

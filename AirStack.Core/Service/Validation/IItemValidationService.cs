@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace AirStack.Core.Services.Validation
+namespace AirStack.Core.Service.Validation
 {
     public interface IItemValidationService
     {

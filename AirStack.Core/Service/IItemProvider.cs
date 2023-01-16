@@ -1,6 +1,6 @@
 ﻿using AirStack.Core.Model;
 
-namespace AirStack.Core.Services
+namespace AirStack.Core.Service
 {
     public interface IItemProvider
     {

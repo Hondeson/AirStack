@@ -1,7 +1,7 @@
-﻿using AirStack.Core.Services;
+﻿using AirStack.Core.Service;
 using System.Text.RegularExpressions;
 
-namespace AirStack.Core.Services.Validation
+namespace AirStack.Core.Service.Validation
 {
     public class ItemValidationService : IItemValidationService
     {

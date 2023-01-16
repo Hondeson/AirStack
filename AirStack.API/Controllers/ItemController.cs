@@ -1,9 +1,12 @@
-﻿using AirStack.Core.Model;
+﻿using AirStack.API.Helper;
+using AirStack.Core.Model;
 using AirStack.Core.Model.API;
-using AirStack.Core.Services;
-using AirStack.Core.Services.Validation;
+using AirStack.Core.Service;
+using AirStack.Core.Service.Validation;
 using Azure.Identity;
+using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -39,12 +42,22 @@ namespace AirStack.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //time param: 2022-11-21T23:59:59
-        public ActionResult<GetItemDTOList> Get(long offset, long fetch)
+        public ActionResult<List<GetItemDTO>> Get(long offset, long fetch, StatusFilterEnum? statusEnum, DateTimeOffset? productionFrom, DateTimeOffset? productionTo)
         {
             try
             {
-                var listObj = _itemDTOSvc.Get(offset, fetch);
-                return Ok(listObj);
+                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
+                var enumFilterList = FilterEnumHelper.GetMainEnumListFromFilter<StatusEnum, StatusFilterEnum>(statusEnum);
+
+                var itemList = _itemDTOSvc.Get(
+                    offset, fetch,
+                    enumFilterList,
+                    prodFrom, prodTo);
+
+                for (int i = 0; i < itemList.Count; i++)
+                    itemList[i].LoadActualStatus();
+
+                return Ok(itemList);
             }
             catch (Exception ex)
             {
@@ -52,6 +65,87 @@ namespace AirStack.API.Controllers
                 return Problem("Chyba při dotazu na databázi!");
             }
         }
+
+        [HttpGet]
+        [Route("GetItemCount")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<long> GetItemCount(StatusFilterEnum? statusEnum, DateTimeOffset? productionFrom, DateTimeOffset? productionTo)
+        {
+            try
+            {
+                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
+                var enumFilterList = FilterEnumHelper.GetMainEnumListFromFilter<StatusEnum, StatusFilterEnum>(statusEnum);
+
+                var count = _itemDTOSvc.GetCount(enumFilterList, prodFrom, prodTo);
+
+                return Ok(count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Problem("Chyba při dotazu na databázi!");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetFile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetFile(StatusFilterEnum? statusEnum, DateTimeOffset? productionFrom, DateTimeOffset? productionTo)
+        {
+            var dir = Path.Combine(AppContext.BaseDirectory, "Exports");
+            var filePath = Path.Combine(dir, "ItemExport.csv");
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            if (System.IO.File.Exists(filePath))
+                System.IO.File.Delete(filePath);
+
+            try
+            {
+                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
+                var enumFilterList = FilterEnumHelper.GetMainEnumListFromFilter<StatusEnum, StatusFilterEnum>(statusEnum);
+
+                var items = _itemDTOSvc.Get(-1, -1, enumFilterList, prodFrom, prodTo);
+
+                if (items.Count == 0)
+                    return NoContent();
+
+                using (var writer = new StreamWriter(filePath))
+                {
+                    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                    {
+                        csv.WriteRecords(items);
+                    }
+                }
+
+                return File(new FileStream(filePath, FileMode.Open), "application/octet-stream", "ItemExport.csv");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Request params: {0}, {1}", productionFrom, productionTo);
+                _logger.LogError(ex.Message);
+                return Problem("Chyba při exportu souboru!");
+            }
+        }
+
+        (DateTime? prodFrom, DateTime? prodTo) FormatDates(DateTimeOffset? productionFrom, DateTimeOffset? productionTo)
+        {
+            if (productionFrom is null && productionTo is null)
+                return (null, null);
+            else if (productionFrom is null && productionTo.HasValue)
+                productionFrom = DateTime.MinValue;
+            else if (productionFrom.HasValue && productionTo is null)
+                productionTo = DateTime.UtcNow;
+
+            return (productionFrom.Value.ToLocalTime().DateTime, productionTo.Value.ToLocalTime().DateTime);
+        }
+
 
         [HttpGet("{id}", Name = "Get")]
         [ProducesResponseType(StatusCodes.Status200OK)]

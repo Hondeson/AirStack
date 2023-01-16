@@ -2,6 +2,13 @@
   <PropertyGroup>
     <StartupCommand>npm start</StartupCommand>
     <!-- Command to run on project build -->
-    <BuildCommand></BuildCommand>
+    <BuildCommand>
+    </BuildCommand>
   </PropertyGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="svelte\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="svelte\**" />
+  </ItemGroup>
 </Project>

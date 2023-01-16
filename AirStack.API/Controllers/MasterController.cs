@@ -1,5 +1,5 @@
 ﻿using AirStack.Core.Connection;
-using AirStack.Core.Services.Validation;
+using AirStack.Core.Service.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AirStack.API.Controllers

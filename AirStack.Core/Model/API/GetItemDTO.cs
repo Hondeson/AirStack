@@ -10,6 +10,7 @@ namespace AirStack.Core.Model.API
         {
             SetItemData(item);
             SetHistoryData(historyList);
+            LoadActualStatus();
         }
 
         public long ID { get; set; }
@@ -21,7 +22,7 @@ namespace AirStack.Core.Model.API
         public DateTime? DispatchedDate { get; set; }
         public DateTime? TestsDate { get; set; }
         public DateTime? ComplaintDate { get; set; }
-        public DateTime? ComplaintDateToSupplier { get; set; }
+        public DateTime? ComplaintToSupplierDate { get; set; }
 
         public void SetItemData(ItemModel item)
         {
@@ -34,9 +35,6 @@ namespace AirStack.Core.Model.API
         {
             if (historyList.Count == 0)
                 return;
-
-            historyList = historyList.OrderByDescending(x => x.CreatedAt).ToList();
-            this.ActualStatus = ((StatusEnum)historyList.First().StatusID).ToString();
 
             foreach (var item in historyList)
             {
@@ -60,6 +58,31 @@ namespace AirStack.Core.Model.API
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Podle properties najde nejnovější datum a jeho StatusEnum hodnotu jako ActualStatus
+        /// </summary>
+        public void LoadActualStatus()
+        {
+            var dic = new Dictionary<string, DateTime?>();
+            var props = this.GetType().GetProperties().Where(x => x.PropertyType == typeof(DateTime?));
+            foreach (var dateProp in props)
+            {
+                dic.Add(dateProp.Name, (DateTime?)dateProp.GetValue(this));
+            }
+
+            if (dic.Count == 0)
+                return;
+
+            var newestDatePropName = dic.MaxBy(x => x.Value).Key;
+            var enumName = newestDatePropName.Replace("Date", "");
+            if (Enum.TryParse<StatusEnum>(enumName, out _) == false)
+            {
+                throw new Exception($"ModelError: {this.GetType().Name} Date property doesnt have matching enum value");
+            }
+
+            this.ActualStatus = enumName;
         }
     }
 }

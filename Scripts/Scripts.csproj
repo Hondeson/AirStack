@@ -13,6 +13,7 @@
     <None Remove="Mssql\004_create_table_ItemHistory.sql" />
     <None Remove="Mssql\005_create_proc_GetItem.sql" />
     <None Remove="Mssql\006_create_proc_GetItemDTO.sql" />
+    <None Remove="Mssql\007_create_proc_GetItemCount.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +23,7 @@
     <Compile Include="Mssql\005_create_proc_GetItem.sql" />
     <Compile Include="Mssql\002_create_table_Settings.sql" />
     <Compile Include="Mssql\006_create_proc_GetItemDTO.sql" />
+    <Compile Include="Mssql\007_create_proc_GetItemCount.sql" />
   </ItemGroup>
 
 </Project>
