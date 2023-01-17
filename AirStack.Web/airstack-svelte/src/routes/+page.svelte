@@ -1,6 +1,7 @@
 <script>
-    import { settings } from "../settings";
+    import getPath from "../apiRequestHelper";
     import { onMount } from "svelte";
+    import { subMonths } from "date-fns";
     import { readable, writable } from "svelte/store";
     import {
         createTable,
@@ -30,30 +31,20 @@
     });
 
     //#region gridFilterHandlers
+    let prodFromDate;
+    let prodToDate;
+
     const handleApplyFilter = () => {
         loadGridData(0, 150);
         pageIndex.set(0);
         actualPage = 0;
     };
-
-    let codeFilterVal;
-    const handleCodeFilter = (filterValue, value) => {
-        codeFilterVal = filterValue;
-        return true;
-    };
-
-    let parentCodeFilterVal;
-    const handleParentCodeFilter = (filterValue, value) => {
-        parentCodeFilterVal = filterValue;
-        return true;
-    };
-
-    let statusFilterVal;
-    const handleStatusFilter = (filterValue, value) => {
-        statusFilterVal = filterValue;
-        return true;
-    }
     //#endregion
+
+    //musí být definováno
+    const handleColFilter = (filterValue, value) => {
+        return true;
+    };
 
     const columns = table.createColumns([
         table.column({
@@ -65,10 +56,10 @@
             accessor: "code",
             plugins: {
                 colFilter: {
-                    fn: handleCodeFilter,
+                    fn: handleColFilter,
                     render: ({ filterValue }) =>
                         createRender(TextFilter, {
-                            filterValue: filterValue
+                            filterValue: filterValue,
                         }),
                 },
             },
@@ -78,40 +69,43 @@
             accessor: "parentCode",
             plugins: {
                 colFilter: {
-                    fn: handleParentCodeFilter,
+                    fn: handleColFilter,
                     render: ({ filterValue }) =>
                         createRender(TextFilter, {
-                            filterValue: filterValue
+                            filterValue: filterValue,
                         }),
                 },
-            }
+            },
         }),
         table.column({
             header: "Aktuální status",
             accessor: "actualStatus",
             plugins: {
                 colFilter: {
-                    fn: handleParentCodeFilter,
+                    fn: handleColFilter,
                     render: ({ filterValue }) =>
                         createRender(StatusFilter, {
-                            filterValue: filterValue
+                            filterValue: filterValue,
                         }),
                 },
-            }
+            },
         }),
         table.column({
             header: "Datum vstupu do výroby",
             accessor: "productionDate",
             plugins: {
                 colFilter: {
-                    fn: handleParentCodeFilter,
-                    render: () =>
-                        createRender(DateRangeFilter, {
-                            isoFromDate: prodFromDate,
-                            isoToDate: prodToDate
-                        }),
+                    fn: handleColFilter,
+                    initialFilterValue: {
+                        fromDate: subMonths(new Date(), 1),
+                        toDate: new Date(),
+                        isoStringFromDate: null,
+                        isoStringToDate: null,
+                    },
+                    render: ({ filterValue }) =>
+                        createRender(DateRangeFilter, { filterValue }),
                 },
-            }
+            },
         }),
         table.column({
             header: "Datum expedice",
@@ -137,20 +131,20 @@
     const { pageIndex, pageCount, pageSize, hasPreviousPage, hasNextPage } =
         pluginStates.page;
 
-    const { filterValues } = pluginStates.colFilter;
-
     let isBusy = false;
     let totalItemCount = 0;
     let actualPage = 0;
     $: totalPages = Math.ceil(totalItemCount / $pageSize);
-    let prodFromDate;
-    let prodToDate;
     //TODO: chyba připejení s API
     const loadGridData = async (offsetNum, fetchNum) => {
         isBusy = true;
         const req = await fetch(
-            settings.API_PATH +
-                `/api/Item?offset=${offsetNum}&fetch=${fetchNum}&productionFrom=${prodFromDate}&productionTo=${prodToDate}`
+            getPath("api/Item", {
+                offset: offsetNum,
+                fetch: fetchNum,
+                productionFrom: prodFromDate,
+                productionTo: prodToDate,
+            })
         );
 
         let json = await req.json();
@@ -182,8 +176,11 @@
 
     const getTotalItemCount = async () => {
         const req = await fetch(
-            settings.API_PATH +
-                `/api/Item/GetItemCount?productionFrom=${prodFromDate}&productionTo=${prodToDate}`
+            getPath("api/Item/GetItemCount", {
+                statusEnum: 1,
+                productionFrom: prodFromDate,
+                productionTo: prodToDate,
+            })
         );
 
         let json = await req.json();
@@ -202,6 +199,7 @@
         return "Chyba webu!";
     };
 
+    //#region pagination
     const handleNextPage = () => {
         pageIndex.update((actual) => {
             if (actualPage === totalPages) return actual;
@@ -226,6 +224,7 @@
             return actual;
         });
     };
+    //#endregion
 
     onMount(() => {
         loadGridData(0, 150);
@@ -241,11 +240,14 @@
 </div>
 
 <div class="content">
-
     <div class="grid-top">
+        <!-- TODO: bind parametr na filtr -->
         <ExportButton
-            url={settings.API_PATH +
-                `/api/Item/GetFile?productionFrom=${prodFromDate}&productionTo=${prodToDate}`}
+            url="{getPath('api/Item/GetFile', {
+                statusEnum: 0,
+                productionFrom: prodFromDate,
+                productionTo: prodToDate,
+            })}}"
         />
 
         <button on:click={handleApplyFilter}> aplikovat filtr </button>

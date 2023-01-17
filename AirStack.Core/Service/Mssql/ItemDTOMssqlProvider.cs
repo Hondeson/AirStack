@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Dapper.SqlMapper;
 
@@ -37,14 +38,17 @@ namespace AirStack.Core.Service.Mssql
             }
         }
 
-        const string c_GetItemsCountProc =
-            @"exec [dbo].[GetItemCount] @Statuses, @ProductionFrom, @ProductionTo";
+        const string c_GetItemsCountProc = "[dbo].[GetItemCount]";
         public long GetCount(List<StatusEnum> statuses, DateTime? productionFrom, DateTime? productionTo)
         {
-            throw new NotImplementedException();
             using (var con = _sql.Connect())
             {
-                return con.ExecuteScalar<long>(c_GetItemsCountProc, new { ProductionFrom = productionFrom, ProductionTo = productionTo });
+                var parameters = new DynamicParameters();
+                parameters.AddStringList("@Statuses", statuses.Select(x => x.ToString()).ToList());
+                parameters.Add("@ProductionFrom", productionFrom);
+                parameters.Add("@ProductionTo", productionTo);
+
+                return con.ExecuteScalar<long>(c_GetItemsCountProc, parameters, commandType: CommandType.StoredProcedure);
             }
         }
     }

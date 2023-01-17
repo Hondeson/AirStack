@@ -1,23 +1,20 @@
 <script>
-    import { subMonths } from "date-fns";
     import { cs } from "date-fns/locale";
     import { DateInput, localeFromDateFnsLocale } from "date-picker-svelte";
 
-    export let fromDate = subMonths(new Date(), 1);
-    export let toDate = new Date();
-
-    export let isoFromDate;
-    export let isoToDate;
+    export let filterValue;
+    const { fromDate, toDate } =
+        $filterValue;
 
     $: setUtcTimes(), fromDate, toDate;
 
+    const setUtcTimes = () => {
+        $filterValue.isoStringFromDate = fromDate.toISOString();
+        $filterValue.isoStringToDate = toDate.toISOString();
+    };
+
     fromDate.setHours(0, 0, 0);
     toDate.setHours(23, 59, 59);
-
-    const setUtcTimes = () => {
-        isoFromDate = fromDate.toISOString();
-        isoToDate = toDate.toISOString();
-    };
 
     let locale = localeFromDateFnsLocale(cs);
 </script>
@@ -26,7 +23,7 @@
     <div class="filter">
         <p>od:</p>
         <DateInput
-            bind:value={fromDate}
+            bind:value={$filterValue.fromDate}
             {locale}
             closeOnSelection={true}
             placeholder="yyyy-MM-dd hh:mm:ss"
@@ -35,7 +32,7 @@
     <div class="filter">
         <p>do:</p>
         <DateInput
-            bind:value={toDate}
+            bind:value={$filterValue.toDate}
             {locale}
             closeOnSelection={true}
             placeholder="yyyy-MM-dd hh:mm:ss"
