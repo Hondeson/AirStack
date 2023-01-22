@@ -1,0 +1,43 @@
+.empty-button {
+    background-color: white;
+    color: black;
+    font-size: 16px;
+    border: 1px solid black;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    height: 40px;
+    width: 130px;
+}
+
+.empty-button:hover {
+    text-decoration: underline;
+    border: 2px solid black;
+}
+
+.full-button {
+    background-color: black;
+    color: white;
+    font-size: 16px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: white;
+    padding: 8px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.1s;
+    height: 40px;
+}
+
+.full-button:hover {
+    text-decoration: underline;
+}
+
+p{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+h1{
+    font-family: 'Segoe UI';
+}

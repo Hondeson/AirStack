@@ -15,9 +15,18 @@
 </script>
 
 <div class="content">
-    <button on:click={previousPageClicked}>zpět</button>
-    <p>{actualPage} z {totalPages}</p>
-    <button on:click={nextClicked}>další</button>
+    <button class="empty-button" on:click={previousPageClicked}>zpět</button>
+
+    <div class="text-content">
+        {#if totalPages === 0}
+            <p>0</p>
+        {:else}
+            <p>{actualPage}</p>
+        {/if}
+        <p>z</p>
+        <p>{totalPages}</p>
+    </div>
+    <button class="empty-button" on:click={nextClicked}>další</button>
 </div>
 
 <style>
@@ -26,27 +35,19 @@
         display: flex;
         flex-direction: row;
         justify-content: end;
-        margin: 10px 0px;
     }
 
-    button {
-        background-color: rgb(120, 82, 178);
-        color: white;
-        font-size: 16px;
-        border-width: 1px;
-        border-style: solid;
-        border-color: white;
-        padding: 8px 15px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        border-radius: 16px;
+    p {
+        margin: 0px 3px;
+        font-family: "Times New Roman", Times, serif;
     }
 
-    button:hover {
-        background-color: rgb(104, 55, 176);
+    .text-content {
+        display: flex;
+        margin: 0px 10px;
     }
 
-    p{
-        margin: 0px 5px;
+    .empty-button {
+        width: 130px;
     }
 </style>

@@ -9,9 +9,11 @@
     let locale = localeFromDateFnsLocale(cs);
 </script>
 
-<div class="content">
+<div>
     <p>{title}</p>
+</div>
 
+<div class="content">
     <div class="filter">
         <p>od:</p>
         <DateInput
@@ -40,6 +42,7 @@
     .filter {
         display: flex;
         align-items: center;
+        margin-bottom: 5px;
     }
 
     p {

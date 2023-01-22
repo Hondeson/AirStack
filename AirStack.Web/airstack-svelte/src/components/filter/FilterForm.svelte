@@ -4,7 +4,7 @@
     import DateRangeFilter from "./DateRangeFilter.svelte";
     import { filterStore } from "../../stores/filterStore";
     import { subMonths } from "date-fns";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -12,7 +12,7 @@
         dispatch("submit");
     };
 
-let clearStatusSelection = false;
+    let clearStatusSelection = false;
 
     let prodFromDate = subMonths(new Date(), 1);
     let prodToDate = new Date();
@@ -56,73 +56,74 @@ let clearStatusSelection = false;
                     title="Kód dílu:"
                     bind:filterValue={$filterStore.itemParentCode}
                 />
-                <StatusFilter bind:flagValue={$filterStore.statusValue} clearValue={clearStatusSelection} />
+                <div style="margin-top: 20px; max-width: 350px;">
+                    <StatusFilter
+                        bind:flagValue={$filterStore.statusValue}
+                        clearValue={clearStatusSelection}
+                    />
+                </div>
             </div>
 
-            <div>
-                <DateRangeFilter
-                    title="Vstup do výroby"
-                    bind:fromDate={$filterStore.prodFromDate}
-                    bind:toDate={$filterStore.prodToDate}
-                />
-                <DateRangeFilter
-                    title="Expedice"
-                    bind:fromDate={$filterStore.disptFromDate}
-                    bind:toDate={$filterStore.disptToDate}
-                />
-            </div>
+            <div style="display: flex; flex-wrap: wrap;">
+                <div>
+                    <DateRangeFilter
+                        title="Vstup do výroby"
+                        bind:fromDate={$filterStore.prodFromDate}
+                        bind:toDate={$filterStore.prodToDate}
+                    />
+                    <DateRangeFilter
+                        title="Expedice"
+                        bind:fromDate={$filterStore.disptFromDate}
+                        bind:toDate={$filterStore.disptToDate}
+                    />
+                </div>
 
-            <div>
-                <DateRangeFilter
-                    title="Reklamace zákazníka"
-                    bind:toDate={$filterStore.compFromDate}
-                    bind:fromDate={$filterStore.compToDate}
-                />
-                <DateRangeFilter
-                    title="Reklamace dodavateli"
-                    bind:fromDate={$filterStore.compSplFromDate}
-                    bind:toDate={$filterStore.compSplToDate}
-                />
-            </div>
+                <div>
+                    <DateRangeFilter
+                        title="Reklamace zákazníka"
+                        bind:toDate={$filterStore.compFromDate}
+                        bind:fromDate={$filterStore.compToDate}
+                    />
+                    <DateRangeFilter
+                        title="Reklamace dodavateli"
+                        bind:fromDate={$filterStore.compSplFromDate}
+                        bind:toDate={$filterStore.compSplToDate}
+                    />
+                </div>
 
-            <div>
-                <DateRangeFilter
-                    title="Testy"
-                    bind:fromDate={$filterStore.testsFromDate}
-                    bind:toDate={$filterStore.testsToDate}
-                />
+                <div>
+                    <DateRangeFilter
+                        title="Testy"
+                        bind:fromDate={$filterStore.testsFromDate}
+                        bind:toDate={$filterStore.testsToDate}
+                    />
+                </div>
             </div>
         </div>
-        <button type="submit">hledej</button>
-        <button on:click={handleClearButton}> smazat filtr </button>
+
+        <div class="form-buttons">
+            <button type="submit" class="full-button">HLEDEJ</button>
+            <button class="full-button" on:click={handleClearButton}>SMAZAT FILTR </button>
+        </div>
     </form>
 </div>
 
 <style>
     .content {
         padding: 10px;
-        background-color: lightgray;
-        box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.4);
-        border-radius: 5px;
+        border: 1px black solid;
+        border-color: black;
     }
 
-    button {
-        background-color: rgb(120, 82, 178);
-        color: white;
-        font-size: 16px;
-        border-width: 1px;
-        border-style: solid;
-        border-color: white;
-        padding: 8px 15px;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        height: 40px;
-        width: 130px;
-        margin: 30px 0px;
+    
+
+    .mfiltr {
+        margin: 32px 0px;
+        display: flex;
+        flex-direction: column;
     }
 
-    button:hover {
-        background-color: rgb(104, 55, 176);
+    .form-buttons {
+        padding: 30px 0px 0px 0px;
     }
 </style>

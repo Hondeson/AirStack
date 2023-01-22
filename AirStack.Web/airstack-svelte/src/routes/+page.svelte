@@ -2,13 +2,12 @@
     import getPath from "../apiRequestHelper";
     import { onMount } from "svelte";
     import { appliedFilterStore, filterStore } from "../stores/filterStore";
-    import { readable, writable } from "svelte/store";
+    import { writable } from "svelte/store";
     import { createTable, Subscribe, Render } from "svelte-headless-table";
     import FilterForm from "../components/filter/FilterForm.svelte";
     import ExportButton from "../components/ExportButton.svelte";
     import formatDate from "date-fns/format";
     import PaginationButtons from "../components/PaginationButtons.svelte";
-    import { tick } from "svelte";
     import {
         addPagination,
         addColumnFilters,
@@ -25,7 +24,7 @@
         appliedFilterStore.set(structuredClone($filterStore));
         loadGridData(0, 150);
         pageIndex.set(0);
-        actualPage = 0;
+        actualPage = 1;
     };
 
     const columns = table.createColumns([
@@ -75,7 +74,7 @@
 
     let isBusy = false;
     let totalItemCount = 0;
-    let actualPage = 0;
+    let actualPage = 1;
     $: totalPages = Math.ceil(totalItemCount / $pageSize);
 
     const getFilterParamsObj = () => {
@@ -176,13 +175,13 @@
 
     const handlePreviousPage = () => {
         pageIndex.update((actual) => {
-            if (actualPage == 0) return actual;
+            if (actualPage == 1) return actual;
 
             actualPage = actualPage - 1;
             if ($hasPreviousPage) return actual - 1;
 
             let num = actualPage * $pageSize;
-            loadGridData(num < 0 ? 0 : num, 50);
+            loadGridData(actualPage == 1 ? 0 : num, 50);
             return actual;
         });
     };
@@ -198,7 +197,7 @@
 </svelte:head>
 
 <div class="header">
-    <h1>Air Stack</h1>
+    <h1>AIR STACK</h1>
 </div>
 
 <div class="content">
@@ -207,11 +206,10 @@
     </div>
 
     <div class="grid-top">
-        <!-- TODO: bind parametr na filtr -->
-        <ExportButton getUrl={handleExportFileGetUrl} />
+        <ExportButton getUrl={handleExportFileGetUrl} title="Export .csv" />
 
         {#if isBusy}
-            <p>načítám...</p>
+            <p style="margin: 0px;">načítám...</p>
         {/if}
 
         <PaginationButtons
@@ -265,12 +263,14 @@
         </tbody>
     </table>
 
+    <div class="grid-bottom">
     <PaginationButtons
         {actualPage}
         {totalPages}
         on:nextPageClicked={handleNextPage}
         on:previousPageClicked={handlePreviousPage}
     />
+</div>
 </div>
 
 <style>
@@ -287,30 +287,42 @@
         padding: 0.5rem;
     }
 
+    h1 {
+        color: black;
+        font-size: 26px;
+        margin: 0px 16px;
+    }
     .header {
-        height: 60px;
+        height: 50px;
         display: flex;
-        flex-direction: row;
+        position: fixed;
+        background: white;
+        top: 0;
+        left: 0;
+        right: 0;
         justify-content: center;
-        background-color: rgb(120, 82, 178);
         align-items: center;
+        border-bottom: 1px black solid;
+        z-index: 100;
     }
 
     .grid-top {
         display: flex;
         justify-content: space-between;
-        margin: 15px 0px 0px 0px;
+        margin: 30px 0px 10px 0px;
+    }
+
+    .grid-bottom {
+        display: flex;
+        justify-content: end;
+        margin: 15px 0px 10px 0px;
     }
 
     .content {
-        margin: 30px;
+        margin: 80px 30px 30px 30px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-    }
-
-    h1 {
-        color: white;
     }
 
     h1,

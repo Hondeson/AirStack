@@ -1,5 +1,6 @@
 <script>
     export let getUrl;
+    export let title = "Export";
 
     let url;
     const updateUrl = () => {
@@ -15,26 +16,5 @@
 </script>
 
 <form on:submit|preventDefault={updateUrl}>
-    <button type="submit" value="Export">Export</button>
+    <button type="submit" value="Export" class="empty-button">{title}</button>
 </form>
-
-<style>
-    button {
-        background-color: rgb(50, 163, 48);
-        color: white;
-        font-size: 16px;
-        border-width: 1px;
-        border-style: solid;
-        border-color: white;
-        padding: 8px 15px;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        height: 40px;
-        width: 130px;
-    }
-
-    button:hover {
-        background-color: rgb(37, 122, 35);
-    }
-</style>

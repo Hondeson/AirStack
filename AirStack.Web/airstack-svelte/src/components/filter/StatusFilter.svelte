@@ -1,5 +1,4 @@
 <script>
-    import { intervalToDuration } from "date-fns";
     import Svelecte from "svelecte";
 
     export let flagValue = null;
