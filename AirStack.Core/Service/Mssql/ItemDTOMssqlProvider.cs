@@ -23,33 +23,90 @@ namespace AirStack.Core.Service.Mssql
         }
 
         const string c_GetItemDTOProc = "[dbo].[GetItemDTO]";
-        public List<GetItemDTO> Get(long offset, long fetch, List<StatusEnum> statuses, DateTime? productionFrom, DateTime? productionTo)
+        public List<GetItemDTO> Get(
+            long offset, long fetch,
+            List<StatusEnum> statuses,
+            string? codeLike, string? parentCodeLike,
+            DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
+            DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
+            DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
+            DateTimeOffset? complaintFrom, DateTimeOffset? complaintTo,
+            DateTimeOffset? complaintSuplFrom, DateTimeOffset? complaintSuplTo)
         {
             using (var con = _sql.Connect())
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("@Offset", offset);
-                parameters.Add("@Fetch", fetch);
-                parameters.AddStringList("@Statuses", statuses.Select(x => x.ToString()).ToList());
-                parameters.Add("@ProductionFrom", productionFrom);
-                parameters.Add("@ProductionTo", productionTo);
+                DynamicParameters p = GetParams(
+                    statuses,
+                    codeLike, parentCodeLike,
+                    productionFrom, productionTo,
+                    dispatchedFrom, dispatchedTo,
+                    testsFrom, testsTo,
+                    complaintFrom, complaintTo,
+                    complaintSuplFrom, complaintSuplTo);
 
-                return con.Query<GetItemDTO>(c_GetItemDTOProc, parameters, commandType: CommandType.StoredProcedure).ToList();
+                p.Add("@Offset", offset);
+                p.Add("@Fetch", fetch);
+
+                return con.Query<GetItemDTO>(c_GetItemDTOProc, p, commandType: CommandType.StoredProcedure).ToList();
             }
         }
 
         const string c_GetItemsCountProc = "[dbo].[GetItemCount]";
-        public long GetCount(List<StatusEnum> statuses, DateTime? productionFrom, DateTime? productionTo)
+        public long GetCount(
+            List<StatusEnum> statuses,
+            string? codeLike, string? parentCodeLike,
+            DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
+            DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
+            DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
+            DateTimeOffset? complaintFrom, DateTimeOffset? complaintTo,
+            DateTimeOffset? complaintSuplFrom, DateTimeOffset? complaintSuplTo)
         {
             using (var con = _sql.Connect())
             {
-                var parameters = new DynamicParameters();
-                parameters.AddStringList("@Statuses", statuses.Select(x => x.ToString()).ToList());
-                parameters.Add("@ProductionFrom", productionFrom);
-                parameters.Add("@ProductionTo", productionTo);
+                DynamicParameters p = GetParams(
+                    statuses,
+                    codeLike, parentCodeLike,
+                    productionFrom, productionTo,
+                    dispatchedFrom, dispatchedTo,
+                    testsFrom, testsTo,
+                    complaintFrom, complaintTo,
+                    complaintSuplFrom, complaintSuplTo);
 
-                return con.ExecuteScalar<long>(c_GetItemsCountProc, parameters, commandType: CommandType.StoredProcedure);
+                return con.ExecuteScalar<long>(c_GetItemsCountProc, p, commandType: CommandType.StoredProcedure);
             }
+        }
+
+        static DynamicParameters GetParams(
+            List<StatusEnum> statuses,
+            string codeLike, string parentCodeLike,
+            DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
+            DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
+            DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
+            DateTimeOffset? complaintFrom, DateTimeOffset? complaintTo,
+            DateTimeOffset? complaintSuplFrom, DateTimeOffset? complaintSuplTo)
+        {
+            var p = new DynamicParameters();
+
+            p.AddStringList("@Statuses", statuses.Select(x => x.ToString()).ToList());
+            p.Add("@CodeLike", codeLike);
+            p.Add("@ParentCodeLike", parentCodeLike);
+
+            p.Add("@ProductionFrom", productionFrom);
+            p.Add("@ProductionTo", productionTo);
+
+            p.Add("@DispatchedFrom", dispatchedFrom);
+            p.Add("@DispatchedTo", dispatchedTo);
+
+            p.Add("@TestsFrom", testsFrom);
+            p.Add("@TestsTo", testsTo);
+
+            p.Add("@ComplaintFrom", complaintFrom);
+            p.Add("@ComplaintTo", complaintTo);
+
+            p.Add("@ComplaintSuplFrom", complaintSuplFrom);
+            p.Add("@ComplaintSuplTo", complaintSuplTo);
+
+            return p;
         }
     }
 }

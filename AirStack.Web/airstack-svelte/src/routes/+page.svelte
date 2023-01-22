@@ -1,26 +1,17 @@
 <script>
     import getPath from "../apiRequestHelper";
     import { onMount } from "svelte";
-    import { subMonths } from "date-fns";
+    import filterStore from "../stores/filterStore";
     import { readable, writable } from "svelte/store";
-    import {
-        createTable,
-        Subscribe,
-        Render,
-        createRender,
-    } from "svelte-headless-table";
-    import DateRangeFilter from "../components/DateRangeFilter.svelte";
+    import { createTable, Subscribe, Render } from "svelte-headless-table";
+    import FilterForm from "../components/filter/FilterForm.svelte";
     import ExportButton from "../components/ExportButton.svelte";
     import formatDate from "date-fns/format";
     import PaginationButtons from "../components/PaginationButtons.svelte";
-    import TextFilter from "../components/TextFilter.svelte";
-    import StatusFilter from "../components/StatusFilter.svelte";
+    import { tick } from "svelte";
     import {
-        addSortBy,
         addPagination,
-        addResizedColumns,
         addColumnFilters,
-        textPrefixFilter,
     } from "svelte-headless-table/plugins";
 
     let gridData = writable([]);
@@ -30,20 +21,10 @@
         colFilter: addColumnFilters(),
     });
 
-    //#region gridFilterHandlers
-    let prodFromDate;
-    let prodToDate;
-
     const handleApplyFilter = () => {
         loadGridData(0, 150);
         pageIndex.set(0);
         actualPage = 0;
-    };
-    //#endregion
-
-    //musí být definováno
-    const handleColFilter = (filterValue, value) => {
-        return true;
     };
 
     const columns = table.createColumns([
@@ -54,58 +35,18 @@
         table.column({
             header: "Kód airbagu",
             accessor: "code",
-            plugins: {
-                colFilter: {
-                    fn: handleColFilter,
-                    render: ({ filterValue }) =>
-                        createRender(TextFilter, {
-                            filterValue: filterValue,
-                        }),
-                },
-            },
         }),
         table.column({
             header: "Kód dílu",
             accessor: "parentCode",
-            plugins: {
-                colFilter: {
-                    fn: handleColFilter,
-                    render: ({ filterValue }) =>
-                        createRender(TextFilter, {
-                            filterValue: filterValue,
-                        }),
-                },
-            },
         }),
         table.column({
             header: "Aktuální status",
             accessor: "actualStatus",
-            plugins: {
-                colFilter: {
-                    fn: handleColFilter,
-                    render: ({ filterValue }) =>
-                        createRender(StatusFilter, {
-                            filterValue: filterValue,
-                        }),
-                },
-            },
         }),
         table.column({
             header: "Datum vstupu do výroby",
             accessor: "productionDate",
-            plugins: {
-                colFilter: {
-                    fn: handleColFilter,
-                    initialFilterValue: {
-                        fromDate: subMonths(new Date(), 1),
-                        toDate: new Date(),
-                        isoStringFromDate: null,
-                        isoStringToDate: null,
-                    },
-                    render: ({ filterValue }) =>
-                        createRender(DateRangeFilter, { filterValue }),
-                },
-            },
         }),
         table.column({
             header: "Datum expedice",
@@ -135,15 +76,34 @@
     let totalItemCount = 0;
     let actualPage = 0;
     $: totalPages = Math.ceil(totalItemCount / $pageSize);
+
+    const getFilterParamsObj = () => {
+        return {
+            statusEnum: $filterStore.statusValue,
+            codeLike: $filterStore.itemCode,
+            parentCodeLike: $filterStore.itemParentCode,
+            productionFrom: $filterStore.prodFromDate,
+            productionTo: $filterStore.prodToDate,
+            dispatchedFrom: $filterStore.disptFromDate,
+            dispatchedTo: $filterStore.disptToDate,
+            testsFrom: $filterStore.testsFromDate,
+            testsTo: $filterStore.testsToDate,
+            complaintFrom: $filterStore.compFromDate,
+            complaintTo: $filterStore.compToDate,
+            complaintSuplFrom: $filterStore.compSplFromDate,
+            complaintSuplTo: $filterStore.compSplToDate,
+        };
+    };
+
     //TODO: chyba připejení s API
     const loadGridData = async (offsetNum, fetchNum) => {
         isBusy = true;
+
         const req = await fetch(
             getPath("api/Item", {
+                ...getFilterParamsObj(),
                 offset: offsetNum,
                 fetch: fetchNum,
-                productionFrom: prodFromDate,
-                productionTo: prodToDate,
             })
         );
 
@@ -174,13 +134,13 @@
         isBusy = false;
     };
 
+    const handleExportFileGetUrl = () => {
+        return getPath("api/Item/GetFile", getFilterParamsObj());
+    };
+
     const getTotalItemCount = async () => {
         const req = await fetch(
-            getPath("api/Item/GetItemCount", {
-                statusEnum: 1,
-                productionFrom: prodFromDate,
-                productionTo: prodToDate,
-            })
+            getPath("api/Item/GetItemCount", getFilterParamsObj())
         );
 
         let json = await req.json();
@@ -240,24 +200,24 @@
 </div>
 
 <div class="content">
+    <div class="filter-content">
+        <FilterForm on:submit={handleApplyFilter} />
+    </div>
+
     <div class="grid-top">
         <!-- TODO: bind parametr na filtr -->
-        <ExportButton
-            url="{getPath('api/Item/GetFile', {
-                statusEnum: 0,
-                productionFrom: prodFromDate,
-                productionTo: prodToDate,
-            })}}"
-        />
+        <ExportButton getUrl={handleExportFileGetUrl} />
 
-        <button on:click={handleApplyFilter}> aplikovat filtr </button>
+        {#if isBusy}
+            <p>načítám...</p>    
+        {/if}
+        
 
         <PaginationButtons
             {actualPage}
             {totalPages}
             on:nextPageClicked={handleNextPage}
-            on:previousPageClicked={handlePreviousPage}
-        />
+            on:previousPageClicked={handlePreviousPage}/>
     </div>
 
     <table {...$tableAttrs}>

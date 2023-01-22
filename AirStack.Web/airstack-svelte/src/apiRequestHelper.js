@@ -11,11 +11,14 @@ const getPath = (path, paramObject) => {
 
 const addSearchParams = (url, params = {}) => {
 
-    //odstraní undefined params
+    //odstraní undefined, null a whitespacestring
     Object.keys(params).forEach(key => {
-        if (params[key] === undefined) {
+        if (params[key] === undefined || params[key] === null || /^\s*$/.test(params[key])) {
             delete params[key];
         }
+
+        if (params[key] instanceof Date)
+            params[key] = new Date(params[key]).toISOString();
     });
 
     return new URL(

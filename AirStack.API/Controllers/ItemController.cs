@@ -42,22 +42,37 @@ namespace AirStack.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //time param: 2022-11-21T23:59:59
-        public ActionResult<List<GetItemDTO>> Get(long offset, long fetch, StatusFilterEnum? statusEnum, DateTimeOffset? productionFrom, DateTimeOffset? productionTo)
+        public ActionResult<List<GetItemDTO>> Get(
+            long offset, long fetch,
+            StatusFilterEnum? statusEnum,
+            string? codeLike, string? parentCodeLike,
+            DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
+            DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
+            DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
+            DateTimeOffset? complaintFrom, DateTimeOffset? complaintTo,
+            DateTimeOffset? complaintSuplFrom, DateTimeOffset? complaintSuplTo)
         {
             try
             {
-                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
                 var enumFilterList = FilterEnumHelper.GetMainEnumListFromFilter<StatusEnum, StatusFilterEnum>(statusEnum);
 
-                var itemList = _itemDTOSvc.Get(
+                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
+                var (dispFrom, dispTo) = FormatDates(dispatchedFrom, dispatchedTo);
+                var (tesFrom, tesTo) = FormatDates(testsFrom, testsTo);
+                var (compFrom, compTo) = FormatDates(complaintFrom, complaintTo);
+                var (compSplFrom, compSplTo) = FormatDates(complaintSuplFrom, complaintSuplTo);
+
+                var items = _itemDTOSvc.Get(
                     offset, fetch,
                     enumFilterList,
-                    prodFrom, prodTo);
+                    codeLike, parentCodeLike,
+                    prodFrom, prodTo,
+                    dispFrom, dispTo,
+                    tesFrom, tesTo,
+                    compFrom, compTo,
+                    compSplFrom, compSplTo);
 
-                for (int i = 0; i < itemList.Count; i++)
-                    itemList[i].LoadActualStatus();
-
-                return Ok(itemList);
+                return Ok(items);
             }
             catch (Exception ex)
             {
@@ -71,14 +86,33 @@ namespace AirStack.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<long> GetItemCount(StatusFilterEnum? statusEnum, DateTimeOffset? productionFrom, DateTimeOffset? productionTo)
+        public ActionResult<long> GetItemCount(
+            StatusFilterEnum? statusEnum,
+            string? codeLike, string? parentCodeLike,
+            DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
+            DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
+            DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
+            DateTimeOffset? complaintFrom, DateTimeOffset? complaintTo,
+            DateTimeOffset? complaintSuplFrom, DateTimeOffset? complaintSuplTo)
         {
             try
             {
-                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
                 var enumFilterList = FilterEnumHelper.GetMainEnumListFromFilter<StatusEnum, StatusFilterEnum>(statusEnum);
 
-                var count = _itemDTOSvc.GetCount(enumFilterList, prodFrom, prodTo);
+                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
+                var (dispFrom, dispTo) = FormatDates(dispatchedFrom, dispatchedTo);
+                var (tesFrom, tesTo) = FormatDates(testsFrom, testsTo);
+                var (compFrom, compTo) = FormatDates(complaintFrom, complaintTo);
+                var (compSplFrom, compSplTo) = FormatDates(complaintSuplFrom, complaintSuplTo);
+
+                var count = _itemDTOSvc.GetCount(
+                    enumFilterList,
+                    codeLike, parentCodeLike,
+                    prodFrom, prodTo,
+                    dispFrom, dispTo,
+                    tesFrom, tesTo,
+                    compFrom, compTo,
+                    compSplFrom, compSplTo);
 
                 return Ok(count);
             }
@@ -95,7 +129,14 @@ namespace AirStack.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetFile(StatusFilterEnum? statusEnum, DateTimeOffset? productionFrom, DateTimeOffset? productionTo)
+        public IActionResult GetFile(
+            StatusFilterEnum? statusEnum,
+            string? codeLike, string? parentCodeLike,
+            DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
+            DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
+            DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
+            DateTimeOffset? complaintFrom, DateTimeOffset? complaintTo,
+            DateTimeOffset? complaintSuplFrom, DateTimeOffset? complaintSuplTo)
         {
             var dir = Path.Combine(AppContext.BaseDirectory, "Exports");
             var filePath = Path.Combine(dir, "ItemExport.csv");
@@ -108,10 +149,23 @@ namespace AirStack.API.Controllers
 
             try
             {
-                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
                 var enumFilterList = FilterEnumHelper.GetMainEnumListFromFilter<StatusEnum, StatusFilterEnum>(statusEnum);
 
-                var items = _itemDTOSvc.Get(-1, -1, enumFilterList, prodFrom, prodTo);
+                var (prodFrom, prodTo) = FormatDates(productionFrom, productionTo);
+                var (dispFrom, dispTo) = FormatDates(dispatchedFrom, dispatchedTo);
+                var (tesFrom, tesTo) = FormatDates(testsFrom, testsTo);
+                var (compFrom, compTo) = FormatDates(complaintFrom, complaintTo);
+                var (compSplFrom, compSplTo) = FormatDates(complaintSuplFrom, complaintSuplTo);
+
+                var items = _itemDTOSvc.Get(
+                    -1, -1,
+                    enumFilterList,
+                    codeLike, parentCodeLike,
+                    prodFrom, prodTo,
+                    dispFrom, dispTo,
+                    tesFrom, tesTo,
+                    compFrom, compTo,
+                    compSplFrom, compSplTo);
 
                 if (items.Count == 0)
                     return NoContent();
@@ -134,16 +188,16 @@ namespace AirStack.API.Controllers
             }
         }
 
-        (DateTime? prodFrom, DateTime? prodTo) FormatDates(DateTimeOffset? productionFrom, DateTimeOffset? productionTo)
+        (DateTime? fromDate, DateTime? toDate) FormatDates(DateTimeOffset? fromDate, DateTimeOffset? toDate)
         {
-            if (productionFrom is null && productionTo is null)
+            if (fromDate is null && toDate is null)
                 return (null, null);
-            else if (productionFrom is null && productionTo.HasValue)
-                productionFrom = DateTime.MinValue;
-            else if (productionFrom.HasValue && productionTo is null)
-                productionTo = DateTime.UtcNow;
+            else if (fromDate is null && toDate.HasValue)
+                fromDate = DateTime.MinValue;
+            else if (fromDate.HasValue && toDate is null)
+                toDate = DateTime.UtcNow;
 
-            return (productionFrom.Value.ToLocalTime().DateTime, productionTo.Value.ToLocalTime().DateTime);
+            return (fromDate.Value.ToLocalTime().DateTime, toDate.Value.ToLocalTime().DateTime);
         }
 
 

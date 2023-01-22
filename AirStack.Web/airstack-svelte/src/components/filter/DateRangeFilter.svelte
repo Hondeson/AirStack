@@ -2,54 +2,48 @@
     import { cs } from "date-fns/locale";
     import { DateInput, localeFromDateFnsLocale } from "date-picker-svelte";
 
-    export let filterValue;
-    const { fromDate, toDate } =
-        $filterValue;
-
-    $: setUtcTimes(), fromDate, toDate;
-
-    const setUtcTimes = () => {
-        $filterValue.isoStringFromDate = fromDate.toISOString();
-        $filterValue.isoStringToDate = toDate.toISOString();
-    };
-
-    fromDate.setHours(0, 0, 0);
-    toDate.setHours(23, 59, 59);
+    export let title;
+    export let fromDate;
+    export let toDate;
 
     let locale = localeFromDateFnsLocale(cs);
 </script>
 
-<div class="main">
+<div class="content">
+    <p>{title}</p>
+
     <div class="filter">
         <p>od:</p>
         <DateInput
-            bind:value={$filterValue.fromDate}
+            bind:value={fromDate}
             {locale}
             closeOnSelection={true}
-            placeholder="yyyy-MM-dd hh:mm:ss"
+            placeholder=""
         />
     </div>
     <div class="filter">
         <p>do:</p>
         <DateInput
-            bind:value={$filterValue.toDate}
+            bind:value={toDate}
             {locale}
             closeOnSelection={true}
-            placeholder="yyyy-MM-dd hh:mm:ss"
+            placeholder=""
         />
     </div>
 </div>
 
 <style>
-    .filter {
-        display: flex;
-        align-items: center;
+    .content {
         margin: 10px;
     }
 
+    .filter {
+        display: flex;
+        align-items: center;
+    }
+
     p {
-        font-size: 16px;
-        margin: 0px 10px;
+        margin: 5px 10px;
     }
 
     :root {

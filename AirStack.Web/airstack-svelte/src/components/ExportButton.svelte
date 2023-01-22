@@ -1,8 +1,20 @@
 <script>
-    export let url;
+    export let getUrl;
+
+    let url;
+    const updateUrl = () => {
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = getUrl();
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+        }, 100);
+    };
 </script>
 
-<form action={url}>
+<form on:submit|preventDefault={updateUrl}>
     <button type="submit" value="Export">Export</button>
 </form>
 

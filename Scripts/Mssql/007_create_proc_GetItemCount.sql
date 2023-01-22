@@ -1,28 +1,52 @@
-﻿SET ANSI_NULLS ON
+﻿USE [AirStack]
 GO
+
+/****** Object:  StoredProcedure [dbo].[GetItemCount]    Script Date: 20.01.2023 9:38:45 ******/
+SET ANSI_NULLS ON
+GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 -- =============================================
 -- Author:		HH
 -- Create date: 12.01.2023
 -- Description:	Vrátí celkový počet vyfiltrovaných itemů
 -- =============================================
 CREATE PROCEDURE [dbo].[GetItemCount]
+	@Statuses dbo.StringList readonly,
+	@CodeLike nvarchar(300) = null,
+	@ParentCodeLike nvarchar(300) = null,
+
 	@ProductionFrom DateTime = null,
-	@ProductionTo DateTime = null
+	@ProductionTo DateTime = null,
+	
+	@DispatchedFrom DateTime = null,
+	@DispatchedTo DateTime = null,
+
+	@TestsFrom DateTime = null,
+	@TestsTo DateTime = null,
+
+	@ComplaintFrom DateTime = null,
+	@ComplaintTo DateTime = null,
+
+	@ComplaintSuplFrom DateTime = null,
+	@ComplaintSuplTo DateTime = null
 AS
 BEGIN
 	SET NOCOUNT ON;
     
 	SELECT count(1)
-	FROM (	
-		select I.ID, I.Code, I.ParentCode, IH.CreatedAt, S.[Name], s.ID as StatusID from Item I
-		left join ItemHistory IH on I.ID = IH.ItemID
-		left join [Status] S on S.ID = IH.StatusID
-		where 
-		--filtr na vstup do produkce
-			(@ProductionFrom IS NULL OR (IH.CreatedAt >= @ProductionFrom and S.ID = 1)) and
-			(@ProductionTo IS NULL OR (IH.CreatedAt <= @ProductionTo and S.ID = 1))
-	) as seq
+	FROM itemFilterFunc(
+		@Statuses, 
+		@CodeLike, @ParentCodeLike, 
+		@ProductionFrom, @ProductionTo, 
+		@DispatchedFrom, @DispatchedTo,
+		@TestsFrom, @TestsTo,
+		@ComplaintFrom, @ComplaintTo,
+		@ComplaintSuplFrom, @ComplaintSuplTo
+	)
 END
 GO
+
+
