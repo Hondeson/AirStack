@@ -2,10 +2,9 @@
     import TextFilter from "./TextFilter.svelte";
     import StatusFilter from "./StatusFilter.svelte";
     import DateRangeFilter from "./DateRangeFilter.svelte";
-    import filterStore from "../../stores/filterStore";
+    import { filterStore } from "../../stores/filterStore";
     import { subMonths } from "date-fns";
     import { createEventDispatcher, onMount } from "svelte";
-    
 
     const dispatch = createEventDispatcher();
 
@@ -13,9 +12,10 @@
         dispatch("submit");
     };
 
+let clearStatusSelection = false;
+
     let prodFromDate = subMonths(new Date(), 1);
     let prodToDate = new Date();
-
     $filterStore.prodFromDate = prodFromDate;
     $filterStore.prodToDate = prodToDate;
 
@@ -40,6 +40,7 @@
         $filterStore.testsToDate = null;
 
         $filterStore.statusValue = null;
+        clearStatusSelection = true;
     };
 </script>
 
@@ -55,7 +56,7 @@
                     title="Kód dílu:"
                     bind:filterValue={$filterStore.itemParentCode}
                 />
-                <StatusFilter bind:flagValue={$filterStore.statusValue} />
+                <StatusFilter bind:flagValue={$filterStore.statusValue} clearValue={clearStatusSelection} />
             </div>
 
             <div>
@@ -92,7 +93,7 @@
                 />
             </div>
         </div>
-        <button type="submit"> aplikovat filtr </button>
+        <button type="submit">hledej</button>
         <button on:click={handleClearButton}> smazat filtr </button>
     </form>
 </div>

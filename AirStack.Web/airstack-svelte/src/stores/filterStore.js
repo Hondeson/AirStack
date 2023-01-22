@@ -29,8 +29,15 @@ if (browser) {
     }
 }
 
+//ovládá filter formulář
 const filterStore = writable(defaultFilterVal);
-export default filterStore;
+//aplikovaná hodnota filtru, která se používá při requestech
+const appliedFilterStore = writable(structuredClone(defaultFilterVal));
+
+export {
+    appliedFilterStore,
+    filterStore
+}
 
 filterStore.subscribe(value => {
     if (browser) return (localStorage.setItem("filterStore", JSON.stringify(value)))

@@ -1,37 +1,46 @@
 <script>
+    import { intervalToDuration } from "date-fns";
     import Svelecte from "svelecte";
-    export let flagValue = null;
 
+    export let flagValue = null;
+    export let clearValue = false;
+
+    let selectedValueIndexes = null;
     const dataset = [
-        { index: 1, name: "Production", value: "Produkce", flag: 1 },
-        { index: 2, name: "Tests", value: "Testy", flag: 2 },
-        { index: 3, name: "Dispatched", value: "Expedováno", flag: 4 },
-        { index: 4, name: "Complaint", value: "Reklamace zákazníka", flag: 8 },
+        { index: 0, name: "Production", displayName: "Produkce", flag: 1 },
+        { index: 1, name: "Tests", displayName: "Testy", flag: 2 },
+        { index: 2, name: "Dispatched", displayName: "Expedováno", flag: 4 },
         {
-            index: 5,
+            index: 3,
+            name: "Complaint",
+            displayName: "Reklamace zákazníka",
+            flag: 8,
+        },
+        {
+            index: 4,
             name: "ComplaintToSupplier",
-            value: "Reklamace dodavateli",
+            displayName: "Reklamace dodavateli",
             flag: 16,
         },
     ];
-
-    let options = dataset.map((opt) => opt.value);
-
-    let value = null;
+    let options = dataset.map((opt) => opt.displayName);
 
     //potřeba, aby se necyklilo při inicializace
     let isInit = true;
     const restoreValue = () => {
+        isInit = true;
         if (flagValue !== null && flagValue !== 0) {
             let reverseDataSet = dataset.reverse();
             var f = flagValue;
-            value = [];
+            selectedValueIndexes = [];
             reverseDataSet.forEach((obj) => {
                 if (f - obj.flag >= 0) {
-                    value = [...value, obj.index];
+                    selectedValueIndexes = [...selectedValueIndexes, obj.index];
                     f = f - obj.flag;
                 }
             });
+
+            dataset.reverse();
         }
 
         isInit = false;
@@ -40,31 +49,41 @@
     restoreValue();
 
     //propisuje změnu do export flagValue proměnné
-    $: setFlagVal(), value;
+    $: setFlagVal(), selectedValueIndexes;
     const setFlagVal = () => {
         if (isInit) return;
-        if (value === null || value.length === 0) {
+
+        if (
+            selectedValueIndexes === null ||
+            selectedValueIndexes.length === 0
+        ) {
             flagValue = null;
             return;
         }
 
         let val = 0;
-        value.forEach((index) => {
-            val = val + dataset[index].flag;
+        selectedValueIndexes.forEach((i) => {
+            let obj = dataset.at(i);
+            val = val + obj.flag;
         });
 
         if (val > 0) flagValue = val;
     };
 
     //propisuje změny ve flagValue na selection
-    $: flagValue, resetSelection();
+    $: clearValue, resetSelection();
     const resetSelection = () => {
-        if (isInit) return;
-
+        if (!clearValue) return;
         if (flagValue !== null) return;
 
-        value = null;
+        selectedValueIndexes = null;
+        clearValue = false;
     };
 </script>
 
-<Svelecte {options} bind:value multiple={true} placeholder="Aktuální stav" />
+<Svelecte
+    {options}
+    bind:value={selectedValueIndexes}
+    multiple={true}
+    placeholder="Aktuální stav"
+/>

@@ -1,7 +1,7 @@
 <script>
     import getPath from "../apiRequestHelper";
     import { onMount } from "svelte";
-    import filterStore from "../stores/filterStore";
+    import { appliedFilterStore, filterStore } from "../stores/filterStore";
     import { readable, writable } from "svelte/store";
     import { createTable, Subscribe, Render } from "svelte-headless-table";
     import FilterForm from "../components/filter/FilterForm.svelte";
@@ -22,6 +22,7 @@
     });
 
     const handleApplyFilter = () => {
+        appliedFilterStore.set(structuredClone($filterStore));
         loadGridData(0, 150);
         pageIndex.set(0);
         actualPage = 0;
@@ -79,19 +80,19 @@
 
     const getFilterParamsObj = () => {
         return {
-            statusEnum: $filterStore.statusValue,
-            codeLike: $filterStore.itemCode,
-            parentCodeLike: $filterStore.itemParentCode,
-            productionFrom: $filterStore.prodFromDate,
-            productionTo: $filterStore.prodToDate,
-            dispatchedFrom: $filterStore.disptFromDate,
-            dispatchedTo: $filterStore.disptToDate,
-            testsFrom: $filterStore.testsFromDate,
-            testsTo: $filterStore.testsToDate,
-            complaintFrom: $filterStore.compFromDate,
-            complaintTo: $filterStore.compToDate,
-            complaintSuplFrom: $filterStore.compSplFromDate,
-            complaintSuplTo: $filterStore.compSplToDate,
+            statusEnum: $appliedFilterStore.statusValue,
+            codeLike: $appliedFilterStore.itemCode,
+            parentCodeLike: $appliedFilterStore.itemParentCode,
+            productionFrom: $appliedFilterStore.prodFromDate,
+            productionTo: $appliedFilterStore.prodToDate,
+            dispatchedFrom: $appliedFilterStore.disptFromDate,
+            dispatchedTo: $appliedFilterStore.disptToDate,
+            testsFrom: $appliedFilterStore.testsFromDate,
+            testsTo: $appliedFilterStore.testsToDate,
+            complaintFrom: $appliedFilterStore.compFromDate,
+            complaintTo: $appliedFilterStore.compToDate,
+            complaintSuplFrom: $appliedFilterStore.compSplFromDate,
+            complaintSuplTo: $appliedFilterStore.compSplToDate,
         };
     };
 
@@ -135,6 +136,7 @@
     };
 
     const handleExportFileGetUrl = () => {
+        console.log(getFilterParamsObj());
         return getPath("api/Item/GetFile", getFilterParamsObj());
     };
 
@@ -209,15 +211,15 @@
         <ExportButton getUrl={handleExportFileGetUrl} />
 
         {#if isBusy}
-            <p>načítám...</p>    
+            <p>načítám...</p>
         {/if}
-        
 
         <PaginationButtons
             {actualPage}
             {totalPages}
             on:nextPageClicked={handleNextPage}
-            on:previousPageClicked={handlePreviousPage}/>
+            on:previousPageClicked={handlePreviousPage}
+        />
     </div>
 
     <table {...$tableAttrs}>
