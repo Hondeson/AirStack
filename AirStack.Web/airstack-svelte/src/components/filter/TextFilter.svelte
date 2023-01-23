@@ -26,4 +26,10 @@
         justify-content: space-between;
         display: flex;
     }
+
+    input{
+        border: 1px black solid;
+        padding: 5px;
+        border-radius: 3px;
+    }
 </style>

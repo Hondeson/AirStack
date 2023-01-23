@@ -1,6 +1,6 @@
 <script>
     import TextFilter from "./TextFilter.svelte";
-    import StatusFilter from "./StatusFilter.svelte";
+    import StatusPickerFilter from "./StatusPickerFilter.svelte";
     import DateRangeFilter from "./DateRangeFilter.svelte";
     import { filterStore } from "../../stores/filterStore";
     import { subMonths } from "date-fns";
@@ -56,15 +56,15 @@
                     title="Kód dílu:"
                     bind:filterValue={$filterStore.itemParentCode}
                 />
-                <div style="margin-top: 20px; max-width: 350px;">
-                    <StatusFilter
+                <div style="margin-top: 20px; width: 380px; margin-left: 10px;">
+                    <StatusPickerFilter
                         bind:flagValue={$filterStore.statusValue}
                         clearValue={clearStatusSelection}
                     />
                 </div>
             </div>
 
-            <div style="display: flex; flex-wrap: wrap;">
+            <div style="display: flex; flex-wrap: wrap; margin-left: 30px;">
                 <div>
                     <DateRangeFilter
                         title="Vstup do výroby"
@@ -102,7 +102,7 @@
         </div>
 
         <div class="form-buttons">
-            <button type="submit" class="full-button">HLEDEJ</button>
+            <button type="submit" class="full-button" style="margin-right: 15px;">HLEDEJ</button>
             <button class="full-button" on:click={handleClearButton}>SMAZAT FILTR </button>
         </div>
     </form>
@@ -114,8 +114,6 @@
         border: 1px black solid;
         border-color: black;
     }
-
-    
 
     .mfiltr {
         margin: 32px 0px;

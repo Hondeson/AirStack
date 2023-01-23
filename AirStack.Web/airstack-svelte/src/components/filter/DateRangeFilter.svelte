@@ -9,7 +9,7 @@
     let locale = localeFromDateFnsLocale(cs);
 </script>
 
-<div>
+<div class="title">
     <p>{title}</p>
 </div>
 
@@ -47,9 +47,5 @@
 
     p {
         margin: 5px 10px;
-    }
-
-    :root {
-        --date-input-width: auto;
     }
 </style>
