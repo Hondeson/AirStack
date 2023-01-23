@@ -2,7 +2,12 @@
 
 ## Klient
 Aplikace slouží jako uživatelský vstup do systému AirStack. Data příchozí na seriový port jsou odesílána na API a výsledek požadavku je následně zobrazen.
-<br>//TODO: obrázky jak vypadá result requestů + error hlášky
+<br>
+OK<br>
+![image](https://user-images.githubusercontent.com/59573257/214136336-42496743-1e7c-4e9f-b8ed-fb8ba6be6efa.png)
+<br>
+NOK<br>
+![image](https://user-images.githubusercontent.com/59573257/214136374-566009bc-2460-4892-bfa9-68ec57ed1be7.png)
 
 ### Režimy aplikace
 Stavy Testy a Expedice se v systému přiřazují na základě triggeru v databázi, aplikace má tuhle funkčnost jen pro krajní případy, kdy trigger nelze využít
