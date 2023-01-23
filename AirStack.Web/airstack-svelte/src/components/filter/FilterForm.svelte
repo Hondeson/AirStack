@@ -42,7 +42,7 @@
         $filterStore.statusValue = null;
         clearStatusSelection = true;
 
-        dispatch("reset");
+        dispatch("reset");    
     };
 </script>
 
@@ -105,7 +105,7 @@
 
         <div class="form-buttons">
             <button type="submit" class="full-button" style="margin-right: 15px;">HLEDEJ</button>
-            <button type="reset" class="full-button" on:click={handleClearButton}>SMAZAT FILTR </button>
+            <button type="button" class="full-button" on:click={handleClearButton}>SMAZAT FILTR </button>
         </div>
     </form>
 </div>

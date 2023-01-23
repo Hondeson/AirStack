@@ -193,9 +193,9 @@ namespace AirStack.API.Controllers
             if (fromDate is null && toDate is null)
                 return (null, null);
             else if (fromDate is null && toDate.HasValue)
-                fromDate = DateTime.MinValue;
+                fromDate = DateTimeOffset.UtcNow.AddYears(-90);
             else if (fromDate.HasValue && toDate is null)
-                toDate = DateTime.UtcNow;
+                toDate = DateTimeOffset.UtcNow;
 
             return (fromDate.Value.ToLocalTime().DateTime, toDate.Value.ToLocalTime().DateTime);
         }

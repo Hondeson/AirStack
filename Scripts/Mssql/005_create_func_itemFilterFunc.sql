@@ -1,12 +1,13 @@
 ﻿USE [AirStack]
 GO
 
-/****** Object:  UserDefinedFunction [dbo].[itemFilterFunc]    Script Date: 20.01.2023 9:37:25 ******/
+/****** Object:  UserDefinedFunction [dbo].[itemFilterFunc]    Script Date: 23.01.2023 21:30:05 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
 
 CREATE FUNCTION [dbo].[itemFilterFunc] (
     @Statuses dbo.StringList readonly,
@@ -34,13 +35,12 @@ RETURN
 	select *
 	from (select aDTO.*, 
 	-- Doplní ActualStatus do DTO
-		CASE 
-			WHEN aDTO.ProductionDate = COALESCE(aDTO.ComplaintToSupplierDate,aDTO.TestsDate, aDTO.DispatchedDate, aDTO.ComplaintDate, aDTO.ProductionDate) THEN 'Production' 
-            WHEN aDTO.TestsDate = COALESCE(aDTO.ComplaintToSupplierDate,aDTO.TestsDate, aDTO.DispatchedDate, aDTO.ComplaintDate,aDTO.ProductionDate) THEN 'Tests' 
-            WHEN aDTO.DispatchedDate = COALESCE(aDTO.ComplaintToSupplierDate,aDTO.TestsDate, aDTO.ComplaintDate,aDTO.DispatchedDate, aDTO.ProductionDate) THEN 'Dispatched' 
-			WHEN aDTO.ComplaintDate = COALESCE(aDTO.ComplaintToSupplierDate,aDTO.ComplaintDate,aDTO.TestsDate, aDTO.DispatchedDate, aDTO.ProductionDate) THEN 'Complaint' 
-			WHEN aDTO.ComplaintToSupplierDate = COALESCE(aDTO.ComplaintToSupplierDate,aDTO.ComplaintDate,aDTO.TestsDate, aDTO.DispatchedDate, aDTO.ProductionDate) THEN 'ComplaintToSupplier' 
-			END AS ActualStatus
+			(SELECT top 1 [name] FROM (VALUES 
+			(aDTO.ProductionDate, 'Production'), (aDTO.TestsDate, 'Tests'), 
+			(aDTO.DispatchedDate, 'Dispatched'), (aDTO.ComplaintDate, 'Complaint'), 
+			(aDTO.ComplaintToSupplierDate, 'ComplaintToSupplier')) 
+				AS dateValues(dateValue, [name]) order by dateValue desc)
+		AS ActualStatus
 	from
 	(SELECT seq.ID, seq.Code, seq.ParentCode
 	-- Naformátuju na formu DTO, chybí ale ActualStatus
@@ -81,3 +81,5 @@ RETURN
 	-- filtr na status
 		(not exists (select top 1 value from @Statuses) or exists (select top 1 value from @Statuses where value = res.ActualStatus))
 GO
+
+

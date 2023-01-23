@@ -19,7 +19,5 @@ CREATE TABLE [dbo].[Status](
 GO
 
 
-
-
-insert into [Status] ([Name], [Value]) values 
+insert into [Status] ([Name]) values 
 ('Production'), ('Tests'), ('Dispatched'), ('Complaint'), ('ComplaintToSupplier')

@@ -1,17 +1,19 @@
 ﻿USE [AirStack]
 GO
 
-/****** Object:  StoredProcedure [dbo].[GetItem]    Script Date: 20.01.2023 9:38:59 ******/
+/****** Object:  StoredProcedure [dbo].[GetItem]    Script Date: 23.01.2023 21:30:29 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
+
 -- =============================================
 -- Author:		HH
 -- Create date: 8.12.2022
--- Description:	Vrátí item podle parametrů
+/* Description:	Vrátí item podle parametrů, pokud díl neexistuje v systému, tak kouká do View PartSource
+do externího systému*/
 -- =============================================
 CREATE PROCEDURE [dbo].[GetItem]
 	@ID bigint = null,
