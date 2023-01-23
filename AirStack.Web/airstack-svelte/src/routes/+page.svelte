@@ -187,6 +187,10 @@
     };
     //#endregion
 
+    const handleResetFilter = () => {
+        appliedFilterStore.set(structuredClone($filterStore));
+    };
+
     onMount(() => {
         loadGridData(0, 150);
     });
@@ -202,7 +206,10 @@
 
 <div class="content">
     <div class="filter-content">
-        <FilterForm on:submit={handleApplyFilter} />
+        <FilterForm
+            on:submit={handleApplyFilter}
+            on:reset={handleResetFilter}
+        />
     </div>
 
     <div class="grid-top">
@@ -264,13 +271,13 @@
     </table>
 
     <div class="grid-bottom">
-    <PaginationButtons
-        {actualPage}
-        {totalPages}
-        on:nextPageClicked={handleNextPage}
-        on:previousPageClicked={handlePreviousPage}
-    />
-</div>
+        <PaginationButtons
+            {actualPage}
+            {totalPages}
+            on:nextPageClicked={handleNextPage}
+            on:previousPageClicked={handlePreviousPage}
+        />
+    </div>
 </div>
 
 <style>
