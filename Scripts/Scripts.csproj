@@ -15,6 +15,7 @@
     <None Remove="Mssql\006_create_proc_GetItem.sql" />
     <None Remove="Mssql\007_create_proc_GetItemCount.sql" />
     <None Remove="Mssql\008_create_proc_GetItemDTO.sql" />
+    <None Remove="Mssql\009_create_proc_ProcessQueueItem.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
     <Compile Include="Mssql\002_create_table_Settings.sql" />
     <Compile Include="Mssql\008_create_proc_GetItemDTO.sql" />
     <Compile Include="Mssql\007_create_proc_GetItemCount.sql" />
+    <Compile Include="Mssql\009_create_proc_ProcessQueueItem.sql" />
   </ItemGroup>
 
 </Project>

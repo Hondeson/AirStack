@@ -1,4 +1,5 @@
 using AirStack.API.Helper;
+using AirStack.API.Service;
 using AirStack.Core.Connection;
 using AirStack.Core.Model;
 using AirStack.Core.Service;
@@ -40,6 +41,9 @@ builder.Services.AddSingleton<IStatusProvider, StatusMssqlProvider>();
 builder.Services.AddSingleton<ISettingsProvider, SettingsMssqlProvider>();
 builder.Services.AddSingleton<IItemValidationService, ItemValidationService>();
 builder.Services.AddSingleton<IItemDTOProvider, ItemDTOMssqlProvider>();
+builder.Services.AddSingleton<IItemHistoryQueueProvider, ItemHistoryQueueMssqlProvider>();
+
+builder.Services.AddHostedService<ProcessItemHistoryQueueService>();
 
 var app = builder.Build();
 app.UseCors();

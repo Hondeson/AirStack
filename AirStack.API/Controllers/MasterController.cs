@@ -42,7 +42,7 @@ namespace AirStack.API.Controllers
                         t.Cancel();
                         return Problem("Chyba při spojení s databází!");
                     }
-
+                    
                     return Ok("pong");
                 }
             }

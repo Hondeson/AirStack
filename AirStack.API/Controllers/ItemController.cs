@@ -45,7 +45,7 @@ namespace AirStack.API.Controllers
         public ActionResult<List<GetItemDTO>> Get(
             long offset, long fetch,
             StatusFilterEnum? statusEnum,
-            string? codeLike, string? parentCodeLike,
+            string codeLike, string parentCodeLike,
             DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
             DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
             DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
@@ -88,7 +88,7 @@ namespace AirStack.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<long> GetItemCount(
             StatusFilterEnum? statusEnum,
-            string? codeLike, string? parentCodeLike,
+            string codeLike, string parentCodeLike,
             DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
             DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
             DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
@@ -131,7 +131,7 @@ namespace AirStack.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetFile(
             StatusFilterEnum? statusEnum,
-            string? codeLike, string? parentCodeLike,
+            string codeLike, string parentCodeLike,
             DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
             DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
             DateTimeOffset? testsFrom, DateTimeOffset? testsTo,

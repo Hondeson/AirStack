@@ -26,7 +26,7 @@ namespace AirStack.Core.Service.Mssql
         public List<GetItemDTO> Get(
             long offset, long fetch,
             List<StatusEnum> statuses,
-            string? codeLike, string? parentCodeLike,
+            string codeLike, string parentCodeLike,
             DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
             DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
             DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
@@ -54,7 +54,7 @@ namespace AirStack.Core.Service.Mssql
         const string c_GetItemsCountProc = "[dbo].[GetItemCount]";
         public long GetCount(
             List<StatusEnum> statuses,
-            string? codeLike, string? parentCodeLike,
+            string codeLike, string parentCodeLike,
             DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
             DateTimeOffset? dispatchedFrom, DateTimeOffset? dispatchedTo,
             DateTimeOffset? testsFrom, DateTimeOffset? testsTo,
