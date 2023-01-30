@@ -42,7 +42,7 @@ namespace AirStack.Core.Service.Mssql
             @"exec [dbo].[GetItem] @ID, @Code, @ParentCode, @CodeLike";
         List<ItemModel> Get(long id, string code = null, string parentCode = null, string codeFilterString = null)
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 object param = new { ID = id, Code = code, ParentCode = parentCode, CodeLike = codeFilterString };
                 return con.Query<ItemModel>(c_GetItemProc, param).ToList();
@@ -57,7 +57,7 @@ namespace AirStack.Core.Service.Mssql
                 SELECT SCOPE_IDENTITY();";
         public bool Create(ItemModel item)
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 object param = new { item.Code, item.ParentCode };
                 item.ID = con.ExecuteScalar<long>(c_CreateItemQuery, param);
@@ -72,7 +72,7 @@ namespace AirStack.Core.Service.Mssql
                 where [ID] = @ID";
         public bool Update(ItemModel item)
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 object param = new { ID = item.ID, Code = item.Code, ParentCode = item.ParentCode };
                 int res = con.Execute(c_UpdateItemQuery, param);

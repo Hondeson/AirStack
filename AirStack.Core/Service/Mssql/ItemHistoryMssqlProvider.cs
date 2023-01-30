@@ -22,7 +22,7 @@ namespace AirStack.Core.Service.Mssql
             @"select * from ItemHistory where ID = @ID";
         public ItemHistoryModel Get(long id)
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 object param = new { ID = id };
                 return con.QueryFirst<ItemHistoryModel>(c_GetQuery, param);
@@ -34,7 +34,7 @@ namespace AirStack.Core.Service.Mssql
                 where ItemID = @ItemID";
         public List<ItemHistoryModel> GetByItemId(long itemId)
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 object param = new { ItemID = itemId };
                 return con.Query<ItemHistoryModel>(c_GetByItemIdQuery, param).ToList();
@@ -55,7 +55,7 @@ namespace AirStack.Core.Service.Mssql
             if (model.StatusID < 1)
                 throw new ArgumentException("Creating Item history requires valid statusID!");
 
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 object param = new { model.ItemID, model.StatusID, model.CreatedAt };
                 model.ID = con.ExecuteScalar<long>(c_CreateQuery, param);

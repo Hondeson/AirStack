@@ -1,5 +1,5 @@
 <script>
-    import { cs } from "date-fns/locale";
+    import { cs } from "date-fns/locale/index.js";
     import { DateInput, localeFromDateFnsLocale } from "date-picker-svelte";
 
     export let title;

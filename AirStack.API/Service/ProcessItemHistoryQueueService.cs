@@ -30,6 +30,7 @@ namespace AirStack.API.Service
                     if (hasError != true)
                         _logger.LogError(ex.Message);
 
+                    await Task.Delay(6000);
                     hasError = true;
                 }
             }

@@ -20,7 +20,7 @@ namespace AirStack.Core.Service.Mssql
         string c_ExecProcessQueueItem = @"[ProcessQueueItem]";
         public void Process()
         {
-            using (var con = _slq.Connect())
+            using (var con = _slq.Connection())
             {
                 con.Execute(c_ExecProcessQueueItem);
             }

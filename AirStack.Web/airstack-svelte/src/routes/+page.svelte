@@ -6,7 +6,7 @@
     import { createTable, Subscribe, Render } from "svelte-headless-table";
     import FilterForm from "../components/filter/FilterForm.svelte";
     import ExportButton from "../components/ExportButton.svelte";
-    import formatDate from "date-fns/format";
+    import { format } from "date-fns";
     import PaginationButtons from "../components/PaginationButtons.svelte";
     import {
         addPagination,
@@ -114,7 +114,7 @@
             for (const [key, value] of Object.entries(obj)) {
                 if (key.endsWith("Date") && value != null) {
                     const date = new Date(value);
-                    newObj[key] = formatDate(date, "yyyy-MM-dd HH:mm:ss");
+                    newObj[key] = format(date, "yyyy-MM-dd HH:mm:ss");
                     continue;
                 }
 

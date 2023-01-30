@@ -33,7 +33,7 @@ namespace AirStack.Core.Service.Mssql
             DateTimeOffset? complaintFrom, DateTimeOffset? complaintTo,
             DateTimeOffset? complaintSuplFrom, DateTimeOffset? complaintSuplTo)
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 DynamicParameters p = GetParams(
                     statuses,
@@ -61,7 +61,7 @@ namespace AirStack.Core.Service.Mssql
             DateTimeOffset? complaintFrom, DateTimeOffset? complaintTo,
             DateTimeOffset? complaintSuplFrom, DateTimeOffset? complaintSuplTo)
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 DynamicParameters p = GetParams(
                     statuses,

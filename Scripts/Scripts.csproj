@@ -7,27 +7,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Mssql\000_create_Database.sql" />
     <None Remove="Mssql\001_create_table_Status.sql" />
     <None Remove="Mssql\002_create_table_Settings.sql" />
     <None Remove="Mssql\003_create_table_Item.sql" />
     <None Remove="Mssql\004_create_table_ItemHistory.sql" />
-    <None Remove="Mssql\005_create_func_itemFilterFunc.sql" />
-    <None Remove="Mssql\006_create_proc_GetItem.sql" />
-    <None Remove="Mssql\007_create_proc_GetItemCount.sql" />
+    <None Remove="Mssql\005_create_table_ItemHistoryQueue.sql" />
+    <None Remove="Mssql\007_create_func_itemFilterFunc.sql" />
     <None Remove="Mssql\008_create_proc_GetItemDTO.sql" />
-    <None Remove="Mssql\009_create_proc_ProcessQueueItem.sql" />
+    <None Remove="Mssql\010_create_proc_ProcessQueueItem.sql" />
+    <None Remove="Mssql\011_create_proc_GetItem.sql" />
+    <None Remove="Mssql\012_create_proc_GetItemCount.sql" />
+    <None Remove="Mssql\013_grant_exec_proc.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Mssql\005_create_func_itemFilterFunc.sql" />
+    <Compile Include="Mssql\000_create_Database.sql" />
+    <Compile Include="Mssql\007_create_func_itemFilterFunc.sql" />
     <Compile Include="Mssql\001_create_table_Status.sql" />
     <Compile Include="Mssql\003_create_table_Item.sql" />
     <Compile Include="Mssql\004_create_table_ItemHistory.sql" />
-    <Compile Include="Mssql\006_create_proc_GetItem.sql" />
+    <Compile Include="Mssql\011_create_proc_GetItem.sql" />
     <Compile Include="Mssql\002_create_table_Settings.sql" />
     <Compile Include="Mssql\008_create_proc_GetItemDTO.sql" />
-    <Compile Include="Mssql\007_create_proc_GetItemCount.sql" />
-    <Compile Include="Mssql\009_create_proc_ProcessQueueItem.sql" />
+    <Compile Include="Mssql\012_create_proc_GetItemCount.sql" />
+    <Compile Include="Mssql\010_create_proc_ProcessQueueItem.sql" />
+    <Compile Include="Mssql\005_create_table_ItemHistoryQueue.sql" />
+    <Compile Include="Mssql\013_grant_exec_proc.sql" />
   </ItemGroup>
 
 </Project>

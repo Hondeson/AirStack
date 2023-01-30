@@ -9,6 +9,6 @@ namespace AirStack.Core.Connection
 {
     public interface ISqlAdapter
     {
-        IDbConnection Connect();
+        IDbConnection Connection();
     }
 }

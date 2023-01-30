@@ -10,23 +10,15 @@ namespace AirStack.Core.Connection
 {
     public class MssqlConnectionProvider : ISqlAdapter
     {
-#if DEBUG
-        const string c_ConnectionString = "Server={0};Database=AirStack;Trusted_Connection=True;";
-#else
-        const string c_ConnectionString = "Server={0};Database=AirStack;User Id={1};Password={2};";
-#endif
-        string _dbServer = "";
-        public MssqlConnectionProvider(string dbServer)
+        string _conString = "";
+        public MssqlConnectionProvider(string conString)
         {
-            _dbServer = dbServer;
-#if !DEBUG
-            throw new NotImplementedException("Con string braško");
-#endif
+            _conString = conString;
         }
 
-        public IDbConnection Connect()
+        public IDbConnection Connection()
         {
-            return new SqlConnection(string.Format(c_ConnectionString, _dbServer));
+            return new SqlConnection(_conString);
         }
     }
 }

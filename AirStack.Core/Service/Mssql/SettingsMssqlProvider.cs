@@ -20,7 +20,7 @@ namespace AirStack.Core.Service.Mssql
             @"select [value] from Settings where [Name] like 'CodeRegex_%'";
         public List<string> GetCodeRegexes()
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 return con.Query<string>(c_GetCodeRegexesQuery).ToList();
             }

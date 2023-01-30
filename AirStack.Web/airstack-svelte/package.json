@@ -17,8 +17,9 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@muonw/powertable": "github:muonw/powertable",
+		"@sveltejs/adapter-node": "^1.0.0-next.106",
 		"date-fns": "^2.29.3",
+		"dotenv": "^16.0.3",
 		"svelecte": "^3.13.2",
 		"svelte-icons": "^2.1.0"
 	}

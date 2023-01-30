@@ -21,7 +21,7 @@ namespace AirStack.Core.Service.Mssql
             @"select * from Status";
         public List<StatusModel> GetAll()
         {
-            using (var con = _sql.Connect())
+            using (var con = _sql.Connection())
             {
                 return con.Query<StatusModel>(c_GetAllQuery).ToList();
             }

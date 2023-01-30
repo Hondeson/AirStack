@@ -34,7 +34,6 @@ BEGIN
 		select top 1 * from Item where Code = @Code
 	end
 
-	--TODO: potřeba dodělat
 	else if(isnull(@ParentCode, '') <> '')
 	begin
 		declare

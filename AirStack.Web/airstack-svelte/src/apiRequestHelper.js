@@ -1,7 +1,9 @@
-import { settings } from "./settings";
+import { PUBLIC_API_PATH } from '$env/static/public';
 
 const getPath = (path, paramObject) => {
-    path = settings.API_PATH + "/" + path;
+    console.log("path");
+    console.log(PUBLIC_API_PATH);
+    path = PUBLIC_API_PATH + "/" + path;
 
     let url = new URL(path);
     url = addSearchParams(url, paramObject);
