@@ -16,6 +16,10 @@
 
     let prodFromDate = subMonths(new Date(), 1);
     let prodToDate = new Date();
+
+    prodFromDate.setHours(0, 0, 0);
+    prodToDate.setHours(23, 59, 59);
+
     $filterStore.prodFromDate = prodFromDate;
     $filterStore.prodToDate = prodToDate;
 
@@ -42,7 +46,7 @@
         $filterStore.statusValue = null;
         clearStatusSelection = true;
 
-        dispatch("reset");    
+        dispatch("reset");
     };
 </script>
 
@@ -104,8 +108,17 @@
         </div>
 
         <div class="form-buttons">
-            <button type="submit" class="full-button" style="margin-right: 15px;">HLEDEJ</button>
-            <button type="button" class="full-button" on:click={handleClearButton}>SMAZAT FILTR </button>
+            <button
+                type="submit"
+                class="full-button"
+                style="margin-right: 15px;">HLEDEJ</button
+            >
+            <button
+                type="button"
+                class="full-button"
+                on:click={handleClearButton}
+                >SMAZAT FILTR
+            </button>
         </div>
     </form>
 </div>

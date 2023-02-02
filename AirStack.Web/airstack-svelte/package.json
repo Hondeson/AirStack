@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"postbuild": "xcopy /y \"package.json\" \"./build\"",
 		"preview": "vite preview"
 	},
 	"devDependencies": {

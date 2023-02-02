@@ -1,7 +1,11 @@
 import { PUBLIC_API_PATH } from '$env/static/public';
 
+const http = "http://";
+
 const getPath = (path, paramObject) => {
     path = PUBLIC_API_PATH + "/" + path;
+    if (!path.startsWith(http))
+        path = http + path;
 
     let url = new URL(path);
     url = addSearchParams(url, paramObject);

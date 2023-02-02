@@ -113,6 +113,7 @@
         } catch (e) {
             isBusy = false;
             isError = true;
+            console.log(e);
             return;
         }
 
