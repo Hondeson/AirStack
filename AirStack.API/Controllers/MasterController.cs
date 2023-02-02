@@ -9,15 +9,19 @@ namespace AirStack.API.Controllers
     public partial class MasterController : ControllerBase
     {
         readonly ILogger<MasterController> _log;
-        readonly ISqlAdapter _sql;
         readonly IItemValidationService _itemValidationSvc;
         public MasterController(ILogger<MasterController> log, ISqlAdapter sql, IItemValidationService itemValidationSvc)
         {
             _log = log;
-            _sql = sql;
             _itemValidationSvc = itemValidationSvc;
         }
 
+        /// <summary>
+        /// Znovunačtení regexů
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="500">OK, došlo k znovunačtení regexů</response>
+        /// <response code="500">Chyba</response>
         [HttpGet]
         [Route("/reload")]
         [ProducesResponseType(StatusCodes.Status200OK)]

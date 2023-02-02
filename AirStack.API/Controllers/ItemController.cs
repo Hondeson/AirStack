@@ -6,6 +6,7 @@ using AirStack.Core.Service.Validation;
 using Azure.Identity;
 using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -36,14 +37,34 @@ namespace AirStack.API.Controllers
             _itemDTOSvc = itemDTOSvc;
         }
 
+        /// <summary>
+        /// Vrací seznam vyfiltrovaných airbagů
+        /// </summary>
+        /// <param name="offset">Odsun filtrovaných airbagů o, slouží pro stránkování</param>
+        /// <param name="fetch">Počet kolik airbagů chci vrátit</param>
+        /// <param name="statusEnum">Flag stavů airbagů</param>
+        /// <param name="codeLike">Filtr kódu airbagu</param>
+        /// <param name="parentCodeLike">Filtr kódu výrobku na němž se airbag nachází</param>
+        /// <param name="productionFrom">Vstup do produkce OD</param>
+        /// <param name="productionTo">Vstup do produkce DO</param>
+        /// <param name="dispatchedFrom">Expedice OD</param>
+        /// <param name="dispatchedTo">Expedice DO</param>
+        /// <param name="testsFrom">Testy OD</param>
+        /// <param name="testsTo">Testy DO</param>
+        /// <param name="complaintFrom">Reklamace zákazníka OD</param>
+        /// <param name="complaintTo">Reklamace zákazníka DO</param>
+        /// <param name="complaintSuplFrom">Reklamace dodavateli OD</param>
+        /// <param name="complaintSuplTo">Reklamace dodavateli OD</param>
+        /// <returns></returns>
+        /// <response code="200">Seznam airbagů</response>
+        /// <response code="204">Seznam airbagů obshauje 0 položek</response>
+        /// <response code="500">Chyba</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //time param: 2022-11-21T23:59:59
         public ActionResult<List<GetItemDTO>> Get(
-            long offset, long fetch,
+            [Required] long offset, [Required] long fetch,
             StatusFilterEnum? statusEnum,
             string codeLike, string parentCodeLike,
             DateTimeOffset? productionFrom, DateTimeOffset? productionTo,
@@ -81,10 +102,28 @@ namespace AirStack.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Vrací počet všech airbagů splňující filter, slouží pro stránkování
+        /// </summary>
+        /// <param name="statusEnum">Flag stavů airbagů</param>
+        /// <param name="codeLike">Filtr kódu airbagu</param>
+        /// <param name="parentCodeLike">Filtr kódu výrobku na němž se airbag nachází</param>
+        /// <param name="productionFrom">Vstup do produkce OD</param>
+        /// <param name="productionTo">Vstup do produkce DO</param>
+        /// <param name="dispatchedFrom">Expedice OD</param>
+        /// <param name="dispatchedTo">Expedice DO</param>
+        /// <param name="testsFrom">Testy OD</param>
+        /// <param name="testsTo">Testy DO</param>
+        /// <param name="complaintFrom">Reklamace zákazníka OD</param>
+        /// <param name="complaintTo">Reklamace zákazníka DO</param>
+        /// <param name="complaintSuplFrom">Reklamace dodavateli OD</param>
+        /// <param name="complaintSuplTo">Reklamace dodavateli OD</param>
+        /// <returns></returns>
+        /// <response code="200">Vrací počet airbagů splňující filter, int64</response>
+        /// <response code="500">Chyba</response>
         [HttpGet]
         [Route("GetItemCount")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<long> GetItemCount(
             StatusFilterEnum? statusEnum,
@@ -123,11 +162,29 @@ namespace AirStack.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Slouží pro stáhnutí vyfiltrovaných airbagů do .csv
+        /// </summary>
+        /// <param name="statusEnum">Flag stavů airbagů</param>
+        /// <param name="codeLike">Filtr kódu airbagu</param>
+        /// <param name="parentCodeLike">Filtr kódu výrobku na němž se airbag nachází</param>
+        /// <param name="productionFrom">Vstup do produkce OD</param>
+        /// <param name="productionTo">Vstup do produkce DO</param>
+        /// <param name="dispatchedFrom">Expedice OD</param>
+        /// <param name="dispatchedTo">Expedice DO</param>
+        /// <param name="testsFrom">Testy OD</param>
+        /// <param name="testsTo">Testy DO</param>
+        /// <param name="complaintFrom">Reklamace zákazníka OD</param>
+        /// <param name="complaintTo">Reklamace zákazníka DO</param>
+        /// <param name="complaintSuplFrom">Reklamace dodavateli OD</param>
+        /// <param name="complaintSuplTo">Reklamace dodavateli OD</param>
+        /// <response code="200">OK, vrací application/octet-stream</response>
+        /// <response code="204">Vrací application/octet-stream, .csv je prázdný</response>
+        /// <response code="500">Chyba</response>
         [HttpGet]
         [Route("GetFile")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetFile(
             StatusFilterEnum? statusEnum,
@@ -167,9 +224,6 @@ namespace AirStack.API.Controllers
                     compFrom, compTo,
                     compSplFrom, compSplTo);
 
-                if (items.Count == 0)
-                    return NoContent();
-
                 using (var writer = new StreamWriter(filePath))
                 {
                     using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
@@ -200,7 +254,14 @@ namespace AirStack.API.Controllers
             return (fromDate.Value.ToLocalTime().DateTime, toDate.Value.ToLocalTime().DateTime);
         }
 
-
+        /// <summary>
+        /// Vrátí konkrétní airbag.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <response code="200">OK</response>
+        /// <response code="404">ID airbagu nenalezeno</response>
+        /// <response code="500">Chyba</response>
         [HttpGet("{id}", Name = "Get")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -227,15 +288,29 @@ namespace AirStack.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Vytvoří nový airbag
+        /// </summary>
+        /// <param name="code"></param>
+        /// <response code="201">Vrací nově vytvořený item</response>
+        /// <response code="400">Kód nemůže být prázdný string</response>
+        /// <response code="409">Pokud kód již existuje</response>
+        /// <response code="500">Chyba</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult Post([FromBody] ItemModel item)
+        public IActionResult Post([FromBody] string code)
         {
             try
             {
-                if (_itemValidationSvc.IsItemCodeValid(item.Code) == false)
+                if (string.IsNullOrWhiteSpace(code))
+                    return BadRequest();
+
+                var item = new ItemModel() { Code = code };
+
+                if (_itemValidationSvc.IsItemCodeValid(code) == false)
                     return ValidationProblem($"Kód neodpovídá definovanému regexu!");
 
                 if (_itemSvc.GetByCode(item.Code) != null)
@@ -244,25 +319,36 @@ namespace AirStack.API.Controllers
                 bool result = _itemSvc.Create(item);
 
                 if (result == false)
-                    return Problem();
+                    return Problem("Vytvoření kódu se nezdařilo!");
 
                 var histObj = new ItemHistoryModel() { ItemID = item.ID, StatusID = new StatusModel(StatusEnum.Production).ID, CreatedAt = DateTime.Now };
                 result = _histSvc.Create(histObj);
 
                 if (result == false)
+                {
+                    _itemSvc.Delete(item.ID);
                     return Problem();
+                }
+
+                return CreatedAtRoute("Get", new { id = item.ID }, item);
             }
             catch (Exception ex)
             {
-                var json = JsonSerializer.Serialize(item);
-                _logger.LogError("Request params: {0}", json);
+                _logger.LogError("Request params: {0}", code);
                 _logger.LogError(ex.Message);
                 return Problem("Chyba na serveru!");
             }
-
-            return CreatedAtRoute("Get", new { id = item.ID }, item);
         }
 
+        /// <summary>
+        /// Vytvoří nový záznam do historie airbagu, čímž dojde ke změně aktuálního stavu. Pokud je stav požadovaný
+        /// Tests, Dispatched, Complaint, tak očekává SN dílu, jinak čeká SN airbagu
+        /// </summary>
+        /// <param name="itemToUpdate"></param>
+        /// <returns></returns>
+        /// <response code="200">OK</response>
+        /// <response code="404">Pokud kód dílu nebo airbagu není nalezen</response>
+        /// <response code="500">Chyba</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -271,18 +357,19 @@ namespace AirStack.API.Controllers
         {
             bool result = false;
 
-            StatusEnum reqStatus = (StatusEnum)itemToUpdate.History.StatusID;
-            ItemModel item = GetItemInFormatByStatus(itemToUpdate.Item, reqStatus);
-            ItemHistoryModel itemHistory = itemToUpdate.History;
+            StatusEnum reqStatus = itemToUpdate.ActualStatus;
+            ItemModel item = CreateItemFromCodeByReuqestStatus(itemToUpdate.Code, reqStatus);
+
+            var itemHistory = new ItemHistoryModel() { StatusID = (long)reqStatus };
             itemHistory.CreatedAt = DateTime.Now;
 
             try
             {
-                if (ShouldCheckParentCode(reqStatus) == true)
+                if (!string.IsNullOrEmpty(item.ParentCode))
                 {
                     item = _itemSvc.GetByParentCode(item.ParentCode);
                     if (item == null)
-                        return NotFound("Kód dílu nenalezen v systému!");
+                        return NotFound("Na dílu se nenechází kód airbagu!");
                 }
                 else
                 {
@@ -315,45 +402,29 @@ namespace AirStack.API.Controllers
             return Ok();
         }
 
-        private bool ShouldCheckParentCode(StatusEnum status)
+        /// <summary>
+        /// Během stavů Tests, Dispatched, Complaint se skenuje ParentCode, je tedy potřeba item takhle vytvořit
+        /// </summary>
+        private ItemModel CreateItemFromCodeByReuqestStatus(string code, StatusEnum status)
         {
             switch (status)
             {
-                case StatusEnum.Production:
-                case StatusEnum.ComplaintToSupplier:
-                    return false;
-
                 case StatusEnum.Tests:
                 case StatusEnum.Dispatched:
                 case StatusEnum.Complaint:
-                    return true;
+                    return new ItemModel() { ParentCode = code };
+                default:
+                    return new ItemModel() { Code = code };
             }
-
-            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Během stavů Tests, Dispatched, Complaint se skenuje ParentCode, ovšem klient tohle neřeší a posílá skenovanou hodnotu jako Code,
-        /// je tedy třeba zde hodnoty uvést na pravou míru
+        /// Vrací regulární výrazy definované pro airbag
         /// </summary>
-        private ItemModel GetItemInFormatByStatus(ItemModel item, StatusEnum status)
-        {
-            switch (status)
-            {
-                case StatusEnum.Tests:
-                case StatusEnum.Dispatched:
-                case StatusEnum.Complaint:
-                    if (!string.IsNullOrWhiteSpace(item.ParentCode))
-                        break;
-
-                    item.ParentCode = item.Code;
-                    item.Code = string.Empty;
-                    break;
-            }
-
-            return item;
-        }
-
+        /// <returns></returns>
+        /// <response code="200">Vrací seznam regexů pro airbag</response>
+        /// <response code="204">Není definován žádný regex</response>
+        /// <response code="500">Chyba</response>
         [HttpGet("CodeRegexes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -39,6 +39,9 @@ namespace AirStack.Core.Model
         }
     }
 
+    /// <summary>
+    /// Odpovídá ID v DB
+    /// </summary>
     public enum StatusEnum : long
     {
         Production = 1,

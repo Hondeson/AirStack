@@ -58,7 +58,7 @@ namespace AirStack.Client
             builder.RegisterType<ComplaintToSupplierHttpRequestService>().AsSelf();
             builder.RegisterType<MockServerRequestService>().AsSelf();
 
-            builder.Register((ioc) =>
+            builder.Register<IServerRequestService>((ioc) =>
             {
                 var type = HttpRequestServiceFactory.GetHttpRequestServiceType(ioc.Resolve<ISettingsProvider>());
 
@@ -74,7 +74,7 @@ namespace AirStack.Client
             {
                 var config = new LoggerConfiguration();
                 var path = Environment.CurrentDirectory + "/Logs/Log-.txt";
-                config.WriteTo.File(path, rollingInterval: RollingInterval.Minute);
+                config.WriteTo.File(path, rollingInterval: RollingInterval.Day);
 
                 return config.CreateLogger();
             }).SingleInstance();

@@ -17,14 +17,14 @@ namespace AirStack.Client.Services.RequestToServer.Http
 
         protected override StatusEnum ItemState => StatusEnum.Production;
 
-        public override async Task<RequestResultObject> SendRequestAsync(ItemModel item)
+        public override async Task<RequestResultObject> SendRequestAsync(string code)
         {
-            RequestResultObject resultObj = new RequestResultObject(item.Code);
+            RequestResultObject resultObj = new RequestResultObject(code);
 
             try
             {
-                var req = await _client.PostAsJsonAsync(_url + "/Item", item);
-                resultObj = HandleResponse(req, item);
+                var req = await _client.PostAsJsonAsync(_url + "/Item", code);
+                resultObj = HandleResponse(req, code);
             }
             catch (Exception ex)
             {

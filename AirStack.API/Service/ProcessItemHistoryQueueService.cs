@@ -6,7 +6,6 @@ namespace AirStack.API.Service
     {
         private readonly ILogger<ProcessItemHistoryQueueService> _logger;
         readonly IItemHistoryQueueProvider _qSvc;
-        //TODO: injectnout helth service, která bude na endpointu check?
         public ProcessItemHistoryQueueService(ILogger<ProcessItemHistoryQueueService> logger, IItemHistoryQueueProvider qProvider)
         {
             _logger = logger;

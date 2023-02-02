@@ -5,10 +5,10 @@ using AirStack.Core.Model;
 using AirStack.Core.Service;
 using AirStack.Core.Service.Mssql;
 using AirStack.Core.Service.Validation;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using System.Data;
-
-if (FilterEnumHelper.ValidateEnumAgainstMain(typeof(StatusEnum), typeof(StatusFilterEnum)) == false)
-    throw new Exception($"Enum {nameof(FilterEnumHelper)} neodpovídá {nameof(StatusEnum)}");
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +43,12 @@ builder.Services.AddSingleton<IItemValidationService, ItemValidationService>();
 builder.Services.AddSingleton<IItemDTOProvider, ItemDTOMssqlProvider>();
 builder.Services.AddSingleton<IItemHistoryQueueProvider, ItemHistoryQueueMssqlProvider>();
 
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
 builder.Services.AddHostedService<ProcessItemHistoryQueueService>();
 
 var app = builder.Build();
@@ -59,4 +65,20 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+CheckBeforeStart();
+
 app.Run();
+
+void CheckBeforeStart()
+{
+    //check zda filtrovací (flag) enumy odpovídají enumum
+    if (FilterEnumHelper.ValidateEnumAgainstMain(typeof(StatusEnum), typeof(StatusFilterEnum)) == false)
+        throw new Exception($"Enum {nameof(FilterEnumHelper)} neodpovídá {nameof(StatusEnum)}");
+
+    //Check na enumy vs enum v DB
+    var statusSvc = app.Services.GetRequiredService<IStatusProvider>();
+    var dbEnums = statusSvc.GetAll();
+
+    if (dbEnums.Count != Enum.GetValues(typeof(StatusEnum)).Length)
+        throw new Exception("");
+}

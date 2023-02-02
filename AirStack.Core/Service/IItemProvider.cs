@@ -10,5 +10,6 @@ namespace AirStack.Core.Service
         ItemModel GetByCode(string code);
         ItemModel GetByParentCode(string parentCode);
         bool Update(ItemModel item);
+        bool Delete(long id);
     }
 }

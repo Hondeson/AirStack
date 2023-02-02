@@ -77,7 +77,7 @@ namespace AirStack.Client.ViewModel
                     _accesed = false;
                     foreach (var item in codes)
                     {
-                        var result = _client.SendRequestAsync(new ItemModel() { Code = item.Code }).Result;
+                        var result = _client.SendRequestAsync(item.Code).Result;
                         item.Copy(result);
                     }
 

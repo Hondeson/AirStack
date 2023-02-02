@@ -67,7 +67,7 @@ namespace AirStack.Client.Services.Notification
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                _errorWindow.Close();
+                _errorWindow?.Close();
             }));
         }
     }

@@ -6,6 +6,6 @@ namespace AirStack.Client.Services.RequestToServer
 {
     public interface IServerRequestService
     {
-        Task<RequestResultObject> SendRequestAsync(ItemModel item);
+        Task<RequestResultObject> SendRequestAsync(string code);
     }
 }

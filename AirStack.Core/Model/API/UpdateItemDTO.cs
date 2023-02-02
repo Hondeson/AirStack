@@ -2,15 +2,21 @@
 {
     public class UpdateItemDTO
     {
-        public UpdateItemDTO() { }
-
-        public UpdateItemDTO(ItemModel item, StatusEnum state)
+        /// <summary>
+        /// Prázdný konstruktor třeba pro deserializaci json
+        /// </summary>
+        public UpdateItemDTO()
         {
-            Item = item;
-            History = new ItemHistoryModel() { ItemID = Item.ID, StatusID = (long)state, CreatedAt = DateTime.Now };
+
         }
 
-        public ItemModel Item { get; set; }
-        public ItemHistoryModel History { get; set; }
+        public UpdateItemDTO(string code, StatusEnum state)
+        {
+            Code = code;
+            ActualStatus = state;
+        }
+
+        public string Code { get; set; }
+        public StatusEnum ActualStatus { get; set; }
     }
 }

@@ -80,5 +80,17 @@ namespace AirStack.Core.Service.Mssql
                 return res > 0;
             }
         }
+
+        const string c_DeleteItem =
+            @"delete from [dbo].[ItemHistory] where ItemID = @ID
+                delete from [dbo].[Item] where ID = @ID";
+        public bool Delete(long id)
+        {
+            using (var con = _sql.Connection())
+            {
+                int res = con.Execute(c_DeleteItem, new { ID = id });
+                return res > 0;
+            }
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace AirStack.Client.Services.RequestToServer.Http
         protected string _url;
 
 #if !DEBUG
-        protected const int c_TimeOut = 6;
+        protected const int c_TimeOut = 12;
 #else
         protected const int c_TimeOut = 180;
 #endif
@@ -66,16 +66,16 @@ namespace AirStack.Client.Services.RequestToServer.Http
         }
 
         protected abstract StatusEnum ItemState { get; }
-        public virtual async Task<RequestResultObject> SendRequestAsync(ItemModel item)
+        public virtual async Task<RequestResultObject> SendRequestAsync(string code)
         {
-            RequestResultObject resultObj = new RequestResultObject(item.Code);
+            RequestResultObject resultObj = new RequestResultObject(code);
 
             try
             {
-                var updateItemObj = new UpdateItemDTO(item, ItemState);
+                var updateItemObj = new UpdateItemDTO(code, ItemState);
                 var req = await _client.PutAsJsonAsync(_url + "/Item", updateItemObj);
 
-                resultObj = HandleResponse(req, item);
+                resultObj = HandleResponse(req, code);
             }
             catch (Exception ex)
             {
@@ -86,9 +86,9 @@ namespace AirStack.Client.Services.RequestToServer.Http
             return resultObj;
         }
 
-        protected RequestResultObject HandleResponse(HttpResponseMessage req, ItemModel item)
+        protected RequestResultObject HandleResponse(HttpResponseMessage req, string input)
         {
-            var resultObj = new RequestResultObject(item.Code);
+            var resultObj = new RequestResultObject(input);
 
             if (req.IsSuccessStatusCode)
             {
@@ -97,8 +97,9 @@ namespace AirStack.Client.Services.RequestToServer.Http
             }
 
             resultObj.Result = false;
-
             var msg = req.Content.ReadAsStringAsync().Result;
+
+            _log.Error($"RequestMode: {this.ItemState}, input: {input}");
             _log.Error(msg);
 
             try
@@ -110,6 +111,9 @@ namespace AirStack.Client.Services.RequestToServer.Http
             {
                 resultObj.ResultMessage = msg;
             }
+
+            if (req.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                _notify.NotifyError(msg);
 
             return resultObj;
         }

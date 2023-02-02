@@ -12,7 +12,6 @@
 		"@sveltejs/kit": "^1.0.0",
 		"date-picker-svelte": "^2.2.5",
 		"svelte": "^3.54.0",
-		"svelte-headless-table": "^0.16.1",
 		"vite": "^4.0.0"
 	},
 	"type": "module",
@@ -21,6 +20,7 @@
 		"date-fns": "^2.29.3",
 		"dotenv": "^16.0.3",
 		"svelecte": "^3.13.2",
+		"svelte-headless-table": "^0.17.2",
 		"svelte-icons": "^2.1.0"
 	}
 }
