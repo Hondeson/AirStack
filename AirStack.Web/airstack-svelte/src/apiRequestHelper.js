@@ -1,8 +1,6 @@
 import { PUBLIC_API_PATH } from '$env/static/public';
 
 const getPath = (path, paramObject) => {
-    console.log("path");
-    console.log(PUBLIC_API_PATH);
     path = PUBLIC_API_PATH + "/" + path;
 
     let url = new URL(path);

@@ -77,5 +77,5 @@ void CheckBeforeStart()
     var dbEnums = statusSvc.GetAll();
 
     if (dbEnums.Count != Enum.GetValues(typeof(StatusEnum)).Length)
-        throw new Exception("");
+        throw new Exception($"{nameof(StatusEnum)} neodpovídá hodnotám v databázi!");
 }

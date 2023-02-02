@@ -95,19 +95,26 @@
         };
     };
 
-    //TODO: chyba připejení s API
+    let isError = false;
     const loadGridData = async (offsetNum, fetchNum) => {
         isBusy = true;
+        isError = false;
 
-        const req = await fetch(
-            getPath("api/Item", {
-                ...getFilterParamsObj(),
-                offset: offsetNum,
-                fetch: fetchNum,
-            })
-        );
+        try {
+            const req = await fetch(
+                getPath("api/Item", {
+                    ...getFilterParamsObj(),
+                    offset: offsetNum,
+                    fetch: fetchNum,
+                })
+            );
 
-        let json = await req.json();
+            var json = await req.json();
+        } catch (e) {
+            isBusy = false;
+            isError = true;
+            return;
+        }
 
         const formattedData = json.map((obj) => {
             const newObj = {};
@@ -217,6 +224,8 @@
 
         {#if isBusy}
             <p style="margin: 0px;">načítám...</p>
+        {:else if isError}
+            <p style="margin: 0px; color: red;">Error</p>
         {/if}
 
         <PaginationButtons
