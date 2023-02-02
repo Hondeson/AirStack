@@ -1,9 +1,5 @@
 ﻿using AirStack.Client.Model;
-using AirStack.Core.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AirStack.Client.Services.RequestToServer

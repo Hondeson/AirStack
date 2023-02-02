@@ -1,10 +1,8 @@
 ﻿using AirStack.Client.Model;
 using AirStack.Client.Services.Notification;
-using AirStack.Client.ViewModel;
 using Serilog;
 using System;
 using System.IO;
-using System.IO.Ports;
 using System.Text.Json;
 
 namespace AirStack.Client.Services.Settings

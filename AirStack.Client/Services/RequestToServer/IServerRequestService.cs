@@ -1,5 +1,4 @@
 ﻿using AirStack.Client.Model;
-using AirStack.Core.Model;
 using System.Threading.Tasks;
 
 namespace AirStack.Client.Services.RequestToServer

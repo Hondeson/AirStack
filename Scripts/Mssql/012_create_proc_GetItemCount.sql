@@ -1,4 +1,4 @@
-﻿USE [AirStack]
+﻿USE[AirStack]
 GO
 
 /****** Object:  StoredProcedure [dbo].[GetItemCount]    Script Date: 20.01.2023 9:38:45 ******/
@@ -11,40 +11,42 @@ GO
 -- =============================================
 -- Author:		HH
 -- Create date: 12.01.2023
--- Description:	Vrátí celkový počet vyfiltrovaných itemů
+-- Description: Vrátí celkový počet vyfiltrovaných itemů
 -- =============================================
 CREATE PROCEDURE [dbo].[GetItemCount]
-	@Statuses dbo.StringList readonly,
-	@CodeLike nvarchar(300) = null,
+@Statuses dbo.StringList readonly,
+    @CodeLike nvarchar(300) = null,
 	@ParentCodeLike nvarchar(300) = null,
 
 	@ProductionFrom DateTime = null,
-	@ProductionTo DateTime = null,
-	
-	@DispatchedFrom DateTime = null,
-	@DispatchedTo DateTime = null,
+    @ProductionTo DateTime = null,
 
-	@TestsFrom DateTime = null,
-	@TestsTo DateTime = null,
+    @DispatchedFrom DateTime = null,
+    @DispatchedTo DateTime = null,
 
-	@ComplaintFrom DateTime = null,
-	@ComplaintTo DateTime = null,
+    @TestsFrom DateTime = null,
+    @TestsTo DateTime = null,
 
-	@ComplaintSuplFrom DateTime = null,
-	@ComplaintSuplTo DateTime = null
+    @ComplaintFrom DateTime = null,
+    @ComplaintTo DateTime = null,
+
+    @ComplaintSuplFrom DateTime = null,
+    @ComplaintSuplTo DateTime = null
 AS
 BEGIN
 	SET NOCOUNT ON;
-    
-	SELECT count(1)
-	FROM itemFilterFunc(
-		@Statuses, 
-		@CodeLike, @ParentCodeLike, 
-		@ProductionFrom, @ProductionTo, 
-		@DispatchedFrom, @DispatchedTo,
-		@TestsFrom, @TestsTo,
-		@ComplaintFrom, @ComplaintTo,
-		@ComplaintSuplFrom, @ComplaintSuplTo
-	)
+
+SELECT count(1)
+
+    FROM itemFilterFunc(
+        @Statuses,
+        @CodeLike, @ParentCodeLike,
+        @ProductionFrom, @ProductionTo,
+        @DispatchedFrom, @DispatchedTo,
+        @TestsFrom, @TestsTo,
+        @ComplaintFrom, @ComplaintTo,
+        @ComplaintSuplFrom, @ComplaintSuplTo
+
+    )
 END
 GO

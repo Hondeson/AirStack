@@ -5,9 +5,6 @@ using AirStack.Core.Model;
 using AirStack.Core.Service;
 using AirStack.Core.Service.Mssql;
 using AirStack.Core.Service.Validation;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using System.Data;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);

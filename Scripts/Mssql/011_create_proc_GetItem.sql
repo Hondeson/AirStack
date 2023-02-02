@@ -1,4 +1,4 @@
-﻿USE [AirStack]
+﻿USE[AirStack]
 GO
 
 /****** Object:  StoredProcedure [dbo].[GetItem]    Script Date: 23.01.2023 21:30:29 ******/
@@ -15,7 +15,9 @@ GO
 /* Description:	Vrátí item podle parametrů, pokud díl neexistuje v systému, tak kouká do View PartSource
 do externího systému*/
 -- =============================================
-CREATE PROCEDURE [dbo].[GetItem]
+CREATE PROCEDURE[dbo].[GetItem]
+
+
 	@ID bigint = null,
 	@Code nvarchar(300) = null,
 	@ParentCode nvarchar(300) = null,
@@ -24,19 +26,29 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	if(@ID is not null and @ID > 0)
+if (@ID is not null and @ID > 0)
 	begin
 		select top 1 * from Item where ID = @ID
+
+
 	end
 
-	else if(isnull(@Code, '') <> '')
+
+
+	else if (isnull(@Code, '') <> '')
 	begin
 		select top 1 * from Item where Code = @Code
+
+
 	end
 
-	else if(isnull(@ParentCode, '') <> '')
+
+
+	else if (isnull(@ParentCode, '') <> '')
 	begin
 		declare
+
+
 			@ItemRow table(Code nvarchar(300), ParentCode nvarchar(300))
 		
 		--zda existuje ParentCode v systému
@@ -56,9 +68,9 @@ BEGIN
 			if not exists(select top 1 * from @ItemRow)
 			begin
 				return 1;
-			end
+end
 
-			select top 1 @ItemID = ID from Item as I
+select top 1 @ItemID = ID from Item as I
 				where Code in (select top 1 Code from @ItemRow)
 
 			--Zrovna updatnu ParentCode do systému
@@ -77,8 +89,8 @@ BEGIN
 	else if(isnull(@CodeLike, '') <> '')
 	begin
 		select * from Item 
-		where Code like CONCAT('%',@CodeLike,'%')
-		or @ParentCode like CONCAT('%',@CodeLike,'%')
+		where Code like CONCAT('%', @CodeLike,'%')
+		or @ParentCode like CONCAT('%', @CodeLike,'%')
 	end
 
 END

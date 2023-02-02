@@ -3,16 +3,11 @@ using AirStack.Client.Services.RequestToServer;
 using AirStack.Client.Services.Settings;
 using AirStack.Client.Services.UserInput;
 using AirStack.Client.ViewModel.Base;
-using AirStack.Core.Model;
-using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace AirStack.Client.ViewModel
 {

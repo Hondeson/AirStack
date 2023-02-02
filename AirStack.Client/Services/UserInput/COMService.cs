@@ -1,10 +1,8 @@
-﻿using AirStack.Client.Model;
-using AirStack.Client.Services.Notification;
+﻿using AirStack.Client.Services.Notification;
 using AirStack.Client.Services.Settings;
 using Serilog;
 using System;
 using System.IO.Ports;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AirStack.Client.Services.UserInput

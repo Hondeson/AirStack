@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AirStack.Core.Model
+﻿namespace AirStack.Core.Model
 {
     public class ItemHistoryModel
     {

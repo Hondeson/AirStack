@@ -3,14 +3,11 @@ using AirStack.Core.Model;
 using AirStack.Core.Model.API;
 using AirStack.Core.Service;
 using AirStack.Core.Service.Validation;
-using Azure.Identity;
 using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 
 namespace AirStack.API.Controllers
 {

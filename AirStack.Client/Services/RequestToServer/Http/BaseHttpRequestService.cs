@@ -5,12 +5,9 @@ using AirStack.Core.Model;
 using AirStack.Core.Model.API;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 

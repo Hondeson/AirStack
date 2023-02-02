@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AirStack.Client.Services.Notification
+﻿namespace AirStack.Client.Services.Notification
 {
     public interface INotificationProvider
     {

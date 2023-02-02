@@ -1,13 +1,7 @@
 ﻿using AirStack.Client.View;
 using CommunityToolkit.Mvvm.Input;
-using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace AirStack.Client.Services.Notification
 {

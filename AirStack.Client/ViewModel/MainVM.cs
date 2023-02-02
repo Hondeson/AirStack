@@ -1,16 +1,8 @@
 ﻿using AirStack.Client.Services.Navigation;
-using AirStack.Client.Services.Notification;
 using AirStack.Client.Services.Settings;
 using AirStack.Client.View;
 using AirStack.Client.ViewModel.Base;
-using AirStack.Core.Base;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 
 namespace AirStack.Client.ViewModel

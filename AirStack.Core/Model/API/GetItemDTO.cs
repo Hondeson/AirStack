@@ -1,6 +1,4 @@
-﻿using AirStack.Core.Model;
-
-namespace AirStack.Core.Model.API
+﻿namespace AirStack.Core.Model.API
 {
     public class GetItemDTO
     {

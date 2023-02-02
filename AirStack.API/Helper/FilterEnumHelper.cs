@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net.NetworkInformation;
-
-namespace AirStack.API.Helper
+﻿namespace AirStack.API.Helper
 {
     [Flags]
     public enum StatusFilterEnum

@@ -1,4 +1,4 @@
-﻿USE [AirStack]
+﻿USE[AirStack]
 GO
 
 /****** Object:  UserDefinedFunction [dbo].[itemFilterFunc]    Script Date: 23.01.2023 21:30:05 ******/
@@ -10,13 +10,13 @@ GO
 
 
 CREATE FUNCTION [dbo].[itemFilterFunc] (
-    @Statuses dbo.StringList readonly,
+	@Statuses dbo.StringList readonly,
 	@CodeLike nvarchar(300) = null,
 	@ParentCodeLike nvarchar(300) = null,
 
 	@ProductionFrom DateTime = null,
 	@ProductionTo DateTime = null,
-	
+
 	@DispatchedFrom DateTime = null,
 	@DispatchedTo DateTime = null,
 
@@ -33,9 +33,11 @@ RETURNS TABLE
 AS
 RETURN
 	select *
-	from (select aDTO.*, 
+	from (select aDTO.*,
 	-- Doplní ActualStatus do DTO
-			(SELECT top 1 [name] FROM (VALUES 
+			(SELECT top 1 [name] FROM (VALUES
+
+
 			(aDTO.ProductionDate, 'Production'), (aDTO.TestsDate, 'Tests'), 
 			(aDTO.DispatchedDate, 'Dispatched'), (aDTO.ComplaintDate, 'Complaint'), 
 			(aDTO.ComplaintToSupplierDate, 'ComplaintToSupplier')) 
@@ -51,14 +53,26 @@ RETURN
 		, MAX(CASE WHEN seq.StatusID = 5 THEN seq.CreatedAt END) as ComplaintToSupplierDate
 	FROM (
 	-- udělám joint abulek
-		select I.ID, I.Code, I.ParentCode, IH.CreatedAt, S.[Name], s.ID as StatusID 
+		select I.ID, I.Code, I.ParentCode, IH.CreatedAt, S.[Name], s.ID as StatusID
+
+
 			from Item I
-			left join ItemHistory IH on I.ID = IH.ItemID
-			left join [Status] S on S.ID = IH.StatusID) as seq
+
+
+			left
+			join ItemHistory IH on I.ID = IH.ItemID
+
+
+			left
+			join [Status] S on S.ID = IH.StatusID) as seq
+
+
 			GROUP BY seq.ID, seq.Code, seq.ParentCode
 	) as aDTO
 	) as res
-	where 
+
+
+	where
 	-- filtr na vstup do produkce
 		(@ProductionFrom IS NULL OR res.ProductionDate >= @ProductionFrom) and
 		(@ProductionTo IS NULL OR res.ProductionDate <= @ProductionTo) and
@@ -79,7 +93,7 @@ RETURN
 	-- filtr na parent kód dílu
 		(@ParentCodeLike IS NULL OR res.ParentCode like CONCAT('%', @ParentCodeLike, '%')) and
 	-- filtr na status
-		(not exists (select top 1 value from @Statuses) or exists (select top 1 value from @Statuses where value = res.ActualStatus))
+		(not exists (select top 1 value from @Statuses) or exists(select top 1 value from @Statuses where value = res.ActualStatus))
 GO
 
 

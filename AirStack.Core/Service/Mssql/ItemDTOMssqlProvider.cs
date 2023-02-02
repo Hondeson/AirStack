@@ -3,13 +3,7 @@ using AirStack.Core.Helper.Dapper;
 using AirStack.Core.Model;
 using AirStack.Core.Model.API;
 using Dapper;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using static Dapper.SqlMapper;
 
 namespace AirStack.Core.Service.Mssql
